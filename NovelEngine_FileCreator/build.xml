@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project NovelEngine_FileCreator with libraries in sub-folder">
+	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
+	<!--ANT 1.7 is required                                        -->
+	<target name="create_run_jar">
+		<mkdir dir="${basedir}/jar" />
+		<mkdir dir="${basedir}/jar/lib" />
+		<mkdir dir="${basedir}/jar/license" />
+
+		<jar destfile="${basedir}/jar/NovelEngine_FileCreator.jar">
+			<manifest>
+				<attribute name="Main-Class" value="hide92795.novelengine.filecreator.NovelEngineFileCreator" />
+				<attribute name="Class-Path" value=". lib/javassist-3.17.1-GA.jar lib/json-simple-1.1.jar lib/msgpack-0.6.8-SNAPSHOT.jar lib/snakeyaml-1.11.jar" />
+			</manifest>
+			<fileset dir="${basedir}/bin" />
+		</jar>
+
+		<copy file="${basedir}/lib/javassist-3.17.1-GA.jar" todir="${basedir}/jar/lib" />
+		<copy file="${basedir}/lib/json-simple-1.1.jar" todir="${basedir}/jar/lib" />
+		<copy file="${basedir}/lib/msgpack-0.6.8-SNAPSHOT.jar" todir="${basedir}/jar/lib" />
+		<copy file="${basedir}/lib/snakeyaml-1.11.jar" todir="${basedir}/jar/lib" />
+
+		<copy todir="${basedir}/jar/license">
+			<fileset dir="${basedir}/license">
+			</fileset>
+		</copy>
+
+		<zip destfile="NovelEngine_FileCreator.zip">
+			<fileset dir="jar" />
+			<fileset dir="." includes="license.txt" />
+		</zip>
+		<zip destfile="NovelEngine_FileCreator-src.zip">
+			<fileset dir="src" />
+			<fileset dir="." includes="license.txt" />
+		</zip>
+		<delete dir="${basedir}/jar" />
+	</target>
+</project>
