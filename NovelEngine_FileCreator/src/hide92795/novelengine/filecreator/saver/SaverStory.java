@@ -46,6 +46,7 @@ public class SaverStory extends Saver {
 	public static final byte VARIABLE_TEMP = 2;
 	public static final byte VARIABLE_SYSTEM = 3;
 	public static final byte VARIABLE_SETTING = 4;
+	public static final byte VARIABLE_RENDER = 5;
 
 	private static final String[] SUPPORTED_OPERATOR = { "+", "＋", "-", "－", "*", "×", "/", "÷", "%", "％", "&", "＆",
 			"|", "｜", "^", "＾", "<<", "＜＜", ">>", "＞＞", ">>>", "＞＞＞" };
@@ -769,6 +770,8 @@ public class SaverStory extends Saver {
 			return VARIABLE_SYSTEM;
 		} else if (var.equals("setting")) {
 			return VARIABLE_SETTING;
+		} else if (var.equals("render")) {
+			return VARIABLE_RENDER;
 		}
 		return VARIABLE_TEMP;
 	}

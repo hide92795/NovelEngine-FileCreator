@@ -1,6 +1,7 @@
 package hide92795.novelengine.filecreator;
 
 import hide92795.novelengine.filecreator.saver.SaverBasic;
+import hide92795.novelengine.filecreator.saver.SaverBox;
 import hide92795.novelengine.filecreator.saver.SaverButton;
 import hide92795.novelengine.filecreator.saver.SaverCharacter;
 import hide92795.novelengine.filecreator.saver.SaverGui;
@@ -118,6 +119,12 @@ public class NovelEngineFileCreator {
 			TimeManager.end("Complete. (", "sec)");
 			System.out.println();
 
+			System.out.println("Creating box data...");
+			TimeManager.start();
+			novelEngineFileCreator.createBoxData();
+			TimeManager.end("Complete. (", "sec)");
+			System.out.println();
+
 			System.out.println("Creating button data...");
 			TimeManager.start();
 			novelEngineFileCreator.createButtonData();
@@ -158,6 +165,13 @@ public class NovelEngineFileCreator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void createBoxData() throws Exception {
+		File outputDir = new File(output, "object");
+		File root = new File(path, "Box");
+		SaverBox saver = new SaverBox(outputDir, cryptProp, root);
+		saver.pack();
 	}
 
 	private void createCharacterData() throws Exception {
