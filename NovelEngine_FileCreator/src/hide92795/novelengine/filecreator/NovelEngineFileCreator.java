@@ -4,6 +4,7 @@ import hide92795.novelengine.filecreator.saver.SaverBasic;
 import hide92795.novelengine.filecreator.saver.SaverBox;
 import hide92795.novelengine.filecreator.saver.SaverButton;
 import hide92795.novelengine.filecreator.saver.SaverCharacter;
+import hide92795.novelengine.filecreator.saver.SaverFont;
 import hide92795.novelengine.filecreator.saver.SaverGui;
 import hide92795.novelengine.filecreator.saver.SaverImage;
 import hide92795.novelengine.filecreator.saver.SaverSound;
@@ -125,6 +126,12 @@ public class NovelEngineFileCreator {
 			TimeManager.end("Complete. (", "sec)");
 			System.out.println();
 
+			System.out.println("Creating font data...");
+			TimeManager.start();
+			novelEngineFileCreator.createFontData();
+			TimeManager.end("Complete. (", "sec)");
+			System.out.println();
+
 			System.out.println("Creating button data...");
 			TimeManager.start();
 			novelEngineFileCreator.createButtonData();
@@ -165,6 +172,13 @@ public class NovelEngineFileCreator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void createFontData() throws Exception {
+		File outputDir = new File(output, "object");
+		File root = new File(path, "Font");
+		SaverFont saver = new SaverFont(outputDir, cryptProp, root);
+		saver.pack();
 	}
 
 	private void createBoxData() throws Exception {

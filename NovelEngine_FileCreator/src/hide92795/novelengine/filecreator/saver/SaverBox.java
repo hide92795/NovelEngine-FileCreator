@@ -39,7 +39,7 @@ public class SaverBox extends Saver {
 
 			int id = (Integer) map.get("ID");
 
-			if ((Boolean) map.get("Default")) {
+			if (map.containsKey("Default")) {
 				defaultId = id;
 			}
 
@@ -64,15 +64,15 @@ public class SaverBox extends Saver {
 			Map<?, ?> movementShow = (Map<?, ?>) movementMap.get("Show");
 			Map<?, ?> movementHide = (Map<?, ?>) movementMap.get("Hide");
 
-			String showMoveRatio =  movementShow.get("ratio").toString();
-			String showMoveX =  movementShow.get("x").toString();
-			String showMoveY =  movementShow.get("y").toString();
-			String showMoveAlpha =  movementShow.get("alpha").toString();
+			String showMoveRatio = movementShow.get("ratio").toString();
+			String showMoveX = movementShow.get("x").toString();
+			String showMoveY = movementShow.get("y").toString();
+			String showMoveAlpha = movementShow.get("alpha").toString();
 
-			String hideMoveRatio =  movementHide.get("ratio").toString();
-			String hideMoveX =  movementHide.get("x").toString();
-			String hideMoveY =  movementHide.get("y").toString();
-			String hideMoveAlpha =  movementHide.get("alpha").toString();
+			String hideMoveRatio = movementHide.get("ratio").toString();
+			String hideMoveX = movementHide.get("x").toString();
+			String hideMoveY = movementHide.get("y").toString();
+			String hideMoveAlpha = movementHide.get("alpha").toString();
 
 			// 書き込み
 			p.write(id);
