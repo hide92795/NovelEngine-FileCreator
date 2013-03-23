@@ -1,10 +1,12 @@
 package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.VarNumManager;
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -17,6 +19,18 @@ import org.msgpack.packer.Packer;
 import org.yaml.snakeyaml.Yaml;
 
 public class SaverFont extends Saver {
+	/**
+	 * 装飾なしの文字を表します。
+	 */
+	public static final int TEXT_NONE = 0;
+	/**
+	 * 影付き文字を表します。
+	 */
+	public static final int TEXT_SHADOWED = 1;
+	/**
+	 * 縁取り文字を表します。
+	 */
+	public static final int TEXT_EDGED = 2;
 	private File path;
 
 	public SaverFont(File output, Properties crypt, File path) {
@@ -64,11 +78,33 @@ public class SaverFont extends Saver {
 			String filename = (String) fontData.get("File");
 			int size = (Integer) fontData.get("Size");
 
+			// 装飾データ
+			Map<?, ?> decoration = (Map<?, ?>) fontData.get("Decoration");
+			Map<?, ?> color = (Map<?, ?>) decoration.get("Color");
+			String decorationType_s = ((String) decoration.get("Type")).toLowerCase(Locale.ENGLISH);
+
+			int decorationType = getDecorationType(decorationType_s);
 			int fontId = VarNumManager.FONT_NAME.add(filename);
 
 			p.write(id);
 			p.write(fontId);
 			p.write(size);
+			p.write(decorationType);
+			switch (decorationType) {
+			case TEXT_NONE:
+				Color c = Color.decode(color.get("Inner").toString());
+				p.write(c.getRGB());
+				break;
+			case TEXT_SHADOWED:
+			case TEXT_EDGED:
+				Color inner = Color.decode(color.get("Inner").toString());
+				Color edge = Color.decode(color.get("Edge").toString());
+				p.write(inner.getRGB());
+				p.write(edge.getRGB());
+				break;
+			default:
+				break;
+			}
 		}
 
 		p.write(defaultId);
@@ -109,5 +145,15 @@ public class SaverFont extends Saver {
 		zos.flush();
 		cos.close();
 		fis.close();
+	}
+
+	private int getDecorationType(String decorationType_s) {
+		if (decorationType_s.equals("edged")) {
+			return TEXT_EDGED;
+		} else if (decorationType_s.equals("shadowed")) {
+			return TEXT_SHADOWED;
+		} else {
+			return TEXT_NONE;
+		}
 	}
 }

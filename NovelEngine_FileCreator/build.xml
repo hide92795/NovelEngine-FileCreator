@@ -15,10 +15,10 @@
 			<fileset dir="${basedir}/bin" />
 		</jar>
 
-		<copy file="${basedir}/lib/javassist-3.17.1-GA.jar" todir="${basedir}/jar/lib" />
-		<copy file="${basedir}/lib/json-simple-1.1.jar" todir="${basedir}/jar/lib" />
-		<copy file="${basedir}/lib/msgpack-0.6.8-SNAPSHOT.jar" todir="${basedir}/jar/lib" />
-		<copy file="${basedir}/lib/snakeyaml-1.11.jar" todir="${basedir}/jar/lib" />
+		<copy todir="${basedir}/jar/lib">
+			<fileset dir="${basedir}/lib" includes="*.jar">
+			</fileset>
+		</copy>
 
 		<copy todir="${basedir}/jar/license">
 			<fileset dir="${basedir}/license">

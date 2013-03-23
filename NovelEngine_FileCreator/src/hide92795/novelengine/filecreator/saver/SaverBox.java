@@ -12,6 +12,8 @@ import org.msgpack.packer.Packer;
 import org.yaml.snakeyaml.Yaml;
 
 public class SaverBox extends Saver {
+	public static final int NAME_LEFT = 0;
+	public static final int NAME_CENTER = 1;
 	private File path;
 
 	public SaverBox(File output, Properties crypt, File path) {
@@ -59,6 +61,25 @@ public class SaverBox extends Saver {
 			int hideY = (Integer) positionHide.get("y");
 			float hideAlpha = ((Double) positionHide.get("alpha")).floatValue();
 
+			// 名前表示エリアデータ読み込み
+			Map<?, ?> name = (Map<?, ?>) map.get("NameArea");
+			String nameType_s = name.get("type").toString().toLowerCase();
+			int nameType = getNameType(nameType_s);
+			int nameX = (Integer) name.get("x");
+			int nameY = (Integer) name.get("y");
+
+			// 表示エリアデータ読み込み
+			Map<?, ?> area = (Map<?, ?>) map.get("WordsArea");
+			Map<?, ?> areaLeftUp = (Map<?, ?>) area.get("LeftUp");
+			Map<?, ?> areaRightDown = (Map<?, ?>) area.get("RightDown");
+
+			int areaLightUpX = (Integer) areaLeftUp.get("x");
+			int areaLightUpY = (Integer) areaLeftUp.get("y");
+
+			int areaRightDownX = (Integer) areaRightDown.get("x");
+			int areaRightDownY = (Integer) areaRightDown.get("y");
+
+
 			// 移動データ読み込み
 			Map<?, ?> movementMap = (Map<?, ?>) map.get("Movement");
 			Map<?, ?> movementShow = (Map<?, ?>) movementMap.get("Show");
@@ -75,6 +96,7 @@ public class SaverBox extends Saver {
 			String hideMoveAlpha = movementHide.get("alpha").toString();
 
 			// 書き込み
+			// 位置データ
 			p.write(id);
 			p.write(imageId);
 
@@ -86,6 +108,19 @@ public class SaverBox extends Saver {
 			p.write(hideY);
 			p.write(hideAlpha);
 
+			// 名前表示エリアデータ
+			p.write(nameType);
+			p.write(nameX);
+			p.write(nameY);
+
+			// 表示エリアデータ
+			p.write(areaLightUpX);
+			p.write(areaLightUpY);
+
+			p.write(areaRightDownX);
+			p.write(areaRightDownY);
+
+			// 移動データ
 			p.write(showMoveRatio);
 			p.write(showMoveX);
 			p.write(showMoveY);
@@ -103,5 +138,13 @@ public class SaverBox extends Saver {
 
 		p.flush();
 		p.close();
+	}
+
+	private int getNameType(String nameType_s) {
+		if (nameType_s.equals("left")) {
+			return NAME_LEFT;
+		} else {
+			return NAME_CENTER;
+		}
 	}
 }

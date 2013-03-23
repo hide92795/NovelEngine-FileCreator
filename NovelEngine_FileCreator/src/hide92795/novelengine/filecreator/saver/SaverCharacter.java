@@ -67,6 +67,7 @@ public class SaverCharacter extends Saver {
 			Map<?, ?> map_c = (Map<?, ?>) yaml.load(fis_c);
 
 			p.write(map_c.get("Name"));
+			p.write(VarNumManager.FONT.add(map_c.get("Font").toString()));
 			LinkedHashMap<?, ?> faces = (LinkedHashMap<?, ?>) map_c.get("Face");
 			Set<?> faces_ks = faces.keySet();
 			p.write(faces.size());

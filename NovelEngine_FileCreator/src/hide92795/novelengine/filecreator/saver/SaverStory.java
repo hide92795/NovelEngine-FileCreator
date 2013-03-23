@@ -476,26 +476,26 @@ public class SaverStory extends Saver {
 				commandLine.add(tokenizer.sval.hashCode());
 			}
 		} else if (command.equals("セリフ")) {
-			// 文字列 キャラID, 文字列 音声ID, 文字列 表示文字列
+			// 文字列 キャラID, 文字列 表示文字列
 			commandLine.add(COMMAND_SHOW_WORDS);
 			if (next != DOUBLE_QUOTE) {
 				// 非文字
 				error("セリフ", 1, "キャラID");
 			} else {
-				commandLine.add(tokenizer.sval.hashCode());
+				commandLine.add(VarNumManager.CHARACTER.add(tokenizer.sval));
 			}
+			// next = nextToken();
+			// if (next != DOUBLE_QUOTE) {
+			// // 非文字
+			// error("セリフ", 2, "音声ID");
+			// } else {
+			// String s = "Voice_" + tokenizer.sval;
+			// commandLine.add(s.hashCode());
+			// }
 			next = nextToken();
 			if (next != DOUBLE_QUOTE) {
 				// 非文字
-				error("セリフ", 2, "音声ID");
-			} else {
-				String s = "Voice_" + tokenizer.sval;
-				commandLine.add(s.hashCode());
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("セリフ", 3, "表示文字列");
+				error("セリフ", 2, "表示文字列");
 			} else {
 				commandLine.add(tokenizer.sval);
 			}
