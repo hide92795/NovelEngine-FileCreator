@@ -64,30 +64,29 @@ public class SaverStory extends Saver {
 
 	public static final byte COMMAND_BLOCK_START = 0;
 	public static final byte COMMAND_BLOCK_END = 1;
-	public static final byte COMMAND_SET_CHAPTERID = 2;
-	public static final byte COMMAND_SET_SCENEID = 3;
-	public static final byte COMMAND_LOAD_CHAPTER = 4;
-	public static final byte COMMAND_MOVE_CHAPTER = 5;
-	public static final byte COMMAND_CHANGE_BG = 6;
-	public static final byte COMMAND_CHANGE_CHARACTER = 7;
-	public static final byte COMMAND_MOVE_CHARACTER = 8;
-	public static final byte COMMAND_ACTION_CHARACTER = 9;
-	public static final byte COMMAND_SHOW_CG = 10;
-	public static final byte COMMAND_SHOW_WORDS = 11;
-	public static final byte COMMAND_MAKE_BUTTON = 12;
-	public static final byte COMMAND_IF = 13;
-	public static final byte COMMAND_PLAY_BGM = 14;
-	public static final byte COMMAND_STOP_BGM = 15;
-	public static final byte COMMAND_PLAY_SE = 16;
-	public static final byte COMMAND_SHOW_BOX = 17;
-	public static final byte COMMAND_HIDE_BOX = 18;
-	public static final byte COMMAND_SET_VARIABLE = 19;
-	public static final byte COMMAND_SET_BACKGROUND_COLOR = 20;
-	public static final byte COMMAND_EFFECT = 21;
-	public static final byte COMMAND_RANDOM = 22;
-	public static final byte COMMAND_CALCULATION = 23;
-	public static final byte COMMAND_EXIT = 24;
-	public static final byte COMMAND_WAIT = 25;
+	public static final byte COMMAND_SET_SCENEID = 2;
+	public static final byte COMMAND_LOAD_CHAPTER = 3;
+	public static final byte COMMAND_MOVE_CHAPTER = 4;
+	public static final byte COMMAND_CHANGE_BG = 5;
+	public static final byte COMMAND_CHANGE_CHARACTER = 6;
+	public static final byte COMMAND_MOVE_CHARACTER = 7;
+	public static final byte COMMAND_ACTION_CHARACTER = 8;
+	public static final byte COMMAND_SHOW_CG = 9;
+	public static final byte COMMAND_SHOW_WORDS = 10;
+	public static final byte COMMAND_MAKE_BUTTON = 11;
+	public static final byte COMMAND_IF = 12;
+	public static final byte COMMAND_PLAY_BGM = 13;
+	public static final byte COMMAND_STOP_BGM = 14;
+	public static final byte COMMAND_PLAY_SE = 15;
+	public static final byte COMMAND_SHOW_BOX = 16;
+	public static final byte COMMAND_HIDE_BOX = 17;
+	public static final byte COMMAND_SET_VARIABLE = 18;
+	public static final byte COMMAND_SET_BACKGROUND_COLOR = 19;
+	public static final byte COMMAND_EFFECT_BACKGROUND = 20;
+	public static final byte COMMAND_RANDOM = 21;
+	public static final byte COMMAND_CALCULATION = 22;
+	public static final byte COMMAND_EXIT = 23;
+	public static final byte COMMAND_WAIT = 24;
 
 	private final File src;
 
@@ -300,9 +299,9 @@ public class SaverStory extends Saver {
 				int i = (int) tokenizer.nval;
 				commandLine.add(i);
 			}
-		} else if (command.equals("画面効果")) {
+		} else if (command.equals("背景エフェクト")) {
 			// 数値 対象, 数値 遅延（ms）, エフェクター エフェクト
-			commandLine.add(COMMAND_EFFECT);
+			commandLine.add(COMMAND_EFFECT_BACKGROUND);
 			if (next != StreamTokenizer.TT_NUMBER) {
 				// 非文字
 				error("画面効果", 1, "対象");
