@@ -17,7 +17,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public class NovelEngineFileCreator {
-	private static final String version = "a1.3.0";
+	private static final String VERSION = "a1.3.0";
 	private Properties project;
 	private File output;
 	private Properties cryptProp;
@@ -30,7 +30,7 @@ public class NovelEngineFileCreator {
 
 	public NovelEngineFileCreator() {
 		System.out.println("----------------------------------------");
-		System.out.println(" NovelEngine FileCreator v" + version);
+		System.out.println(" NovelEngine FileCreator v" + VERSION);
 		System.out.println("----------------------------------------");
 		System.out.println();
 	}

@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_run_jar" name="Create Runnable Jar for Project NovelEngine_FileCreator with libraries in sub-folder">
 	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
-	<!--ANT 1.7 is required                                        -->
-	<target name="create_run_jar">
+	<!--ANT 1.7 is required
+	                             -->
+	<target name="version">
+		<loadfile property="version_old" srcfile="${basedir}/version.txt" />
+		<echo message="現在のバージョン :" level="info" />
+		<echo message="${version_old}" level="info" />
+		<echo message="" level="info" />
+		<echo message="新しいバージョンを入力してください :" level="info" />
+		<input message="新しいバージョンを入力してください" addproperty="version_new" />
+		<replace file="${basedir}/src/hide92795/novelengine/filecreator/NovelEngineFileCreator.java" token="${version_old}" value="${version_new}" summary="on" />
+		<echo message="新しいバージョン :" level="info" />
+		<echo message="${version_new}" level="info" />
+		<echo message="${version_new}" level="info" file="${basedir}/version.txt" />
+	</target>
+
+	<target name="dir">
 		<mkdir dir="${basedir}/jar" />
 		<mkdir dir="${basedir}/jar/lib" />
 		<mkdir dir="${basedir}/jar/license" />
+	</target>
 
+	<target name="create_run_jar" depends="version,dir">
 		<jar destfile="${basedir}/jar/NovelEngine_FileCreator.jar">
 			<manifest>
 				<attribute name="Main-Class" value="hide92795.novelengine.filecreator.NovelEngineFileCreator" />
