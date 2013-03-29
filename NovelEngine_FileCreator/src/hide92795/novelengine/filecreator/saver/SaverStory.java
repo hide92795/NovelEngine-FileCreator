@@ -1,11 +1,31 @@
 package hide92795.novelengine.filecreator.saver;
 
+import hide92795.novelengine.filecreator.CommandException;
 import hide92795.novelengine.filecreator.VarNumManager;
-import java.awt.Color;
+import hide92795.novelengine.filecreator.saver.story.Command;
+import hide92795.novelengine.filecreator.saver.story.CommandAssignment;
+import hide92795.novelengine.filecreator.saver.story.CommandBackGroundEffect;
+import hide92795.novelengine.filecreator.saver.story.CommandButton;
+import hide92795.novelengine.filecreator.saver.story.CommandCalculation;
+import hide92795.novelengine.filecreator.saver.story.CommandChangeBackGround;
+import hide92795.novelengine.filecreator.saver.story.CommandChangeBackGroundColor;
+import hide92795.novelengine.filecreator.saver.story.CommandChangeCharacter;
+import hide92795.novelengine.filecreator.saver.story.CommandExit;
+import hide92795.novelengine.filecreator.saver.story.CommandHideBox;
+import hide92795.novelengine.filecreator.saver.story.CommandIF;
+import hide92795.novelengine.filecreator.saver.story.CommandLoadChapter;
+import hide92795.novelengine.filecreator.saver.story.CommandMoveChapter;
+import hide92795.novelengine.filecreator.saver.story.CommandPlayBGM;
+import hide92795.novelengine.filecreator.saver.story.CommandPlaySE;
+import hide92795.novelengine.filecreator.saver.story.CommandRandom;
+import hide92795.novelengine.filecreator.saver.story.CommandShowBox;
+import hide92795.novelengine.filecreator.saver.story.CommandShowWords;
+import hide92795.novelengine.filecreator.saver.story.CommandStopBGM;
+import hide92795.novelengine.filecreator.saver.story.CommandWait;
 import java.io.File;
 import java.io.FileReader;
 import java.io.StreamTokenizer;
-import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -14,7 +34,31 @@ import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 
 public class SaverStory extends Saver {
+	private static HashMap<String, Command> commands;
 
+	static {
+		commands = new HashMap<String, Command>();
+		commands.put("ロード", new CommandLoadChapter());
+		commands.put("移動", new CommandMoveChapter());
+		commands.put("背景変更", new CommandChangeBackGround());
+		commands.put("キャラ変更", new CommandChangeCharacter());
+		//
+		commands.put("セリフ", new CommandShowWords());
+		commands.put("ボタン", new CommandButton());
+		commands.put("もし", new CommandIF());
+		commands.put("BGM再生", new CommandPlayBGM());
+		commands.put("BGM停止", new CommandStopBGM());
+		commands.put("SE再生", new CommandPlaySE());
+		commands.put("ボックス表示", new CommandShowBox());
+		commands.put("ボックス閉じる", new CommandHideBox());
+		commands.put("設定", new CommandAssignment());
+		commands.put("背景色", new CommandChangeBackGroundColor());
+		commands.put("背景エフェクト", new CommandBackGroundEffect());
+		commands.put("乱数", new CommandRandom());
+		commands.put("計算", new CommandCalculation());
+		commands.put("終了", new CommandExit());
+		commands.put("待機", new CommandWait());
+	}
 	private LinkedList<Object> commandLine;
 	private StreamTokenizer tokenizer;
 	private String chapterID;
@@ -24,15 +68,15 @@ public class SaverStory extends Saver {
 	public static final int CHAPTER_START = -2;
 	public static final int CHAPTER_MENU = -3;
 
-	private final static char END = ';';
-	private final static char DOUBLE_QUOTE = '"';
-	private final static char COMMA = ',';
-	private final static char BLOCK_START = '{';
-	private final static char BLOCK_END = '}';
-	private final static char ARGUMENT_START = '(';
-	private final static char ARGUMENT_END = ')';
+	public final static char END = ';';
+	public final static char DOUBLE_QUOTE = '"';
+	public final static char COMMA = ',';
+	public final static char BLOCK_START = '{';
+	public final static char BLOCK_END = '}';
+	public final static char ARGUMENT_START = '(';
+	public final static char ARGUMENT_END = ')';
 
-	private static final String[] SUPPORTED_IF_OPERATOR = { "<=", "＜＝", "≦", ">=", "＞＝", "≧", ">", "＞", "<", "＜", "=",
+	public static final String[] SUPPORTED_IF_OPERATOR = { "<=", "＜＝", "≦", ">=", "＞＝", "≧", ">", "＞", "<", "＜", "=",
 			"＝" };
 	public static final byte IF_EQUAL = 0;
 	public static final byte IF_GREATER = 1;
@@ -48,7 +92,7 @@ public class SaverStory extends Saver {
 	public static final byte VARIABLE_SETTING = 4;
 	public static final byte VARIABLE_RENDER = 5;
 
-	private static final String[] SUPPORTED_OPERATOR = { "+", "＋", "-", "－", "*", "×", "/", "÷", "%", "％", "&", "＆",
+	public static final String[] SUPPORTED_OPERATOR = { "+", "＋", "-", "－", "*", "×", "/", "÷", "%", "％", "&", "＆",
 			"|", "｜", "^", "＾", "<<", "＜＜", ">>", "＞＞", ">>>", "＞＞＞" };
 	public static final byte OPERATOR_PLUS = 0;
 	public static final byte OPERATOR_MINUS = 1;
@@ -70,7 +114,7 @@ public class SaverStory extends Saver {
 	public static final byte COMMAND_CHANGE_BG = 5;
 	public static final byte COMMAND_CHANGE_CHARACTER = 6;
 	public static final byte COMMAND_MOVE_CHARACTER = 7;
-	public static final byte COMMAND_ACTION_CHARACTER = 8;
+	public static final byte COMMAND_EFFECT_CHARACTER = 8;
 	public static final byte COMMAND_SHOW_CG = 9;
 	public static final byte COMMAND_SHOW_WORDS = 10;
 	public static final byte COMMAND_MAKE_BUTTON = 11;
@@ -94,6 +138,7 @@ public class SaverStory extends Saver {
 		super(output, crypt);
 		this.src = src;
 		commandLine = new LinkedList<Object>();
+
 	}
 
 	@Override
@@ -126,13 +171,6 @@ public class SaverStory extends Saver {
 				break;
 			case StreamTokenizer.TT_WORD:
 				parse();
-				// );確認
-				if (tokenizer.nextToken() != ARGUMENT_END) {
-					error(")", -1, "");
-				}
-				if (tokenizer.nextToken() != END) {
-					error(";", 0, "");
-				}
 				break;
 			case DOUBLE_QUOTE:
 				break;
@@ -143,7 +181,7 @@ public class SaverStory extends Saver {
 				break;
 			case BLOCK_START:
 				if (block) {
-					error("ブロック", 0, "{");
+					throw new CommandException(tokenizer.lineno(), "ブロック", -1, "ブロック内にブロックは設置出来ません。");
 				} else {
 					block = true;
 					commandLine.add(COMMAND_BLOCK_START);
@@ -151,7 +189,7 @@ public class SaverStory extends Saver {
 				break;
 			case BLOCK_END:
 				if (!block) {
-					error("ブロック", 0, "}");
+					throw new CommandException(tokenizer.lineno(), "ブロック", -1, "ブロックが開始していません。");
 				} else {
 					block = false;
 					commandLine.add(COMMAND_BLOCK_END);
@@ -189,576 +227,62 @@ public class SaverStory extends Saver {
 
 		p.flush();
 		p.close();
-	}
-
-	private int nextToken() throws Exception {
-		int token = tokenizer.nextToken();
-		if (token != COMMA) {
-			error("区切り文字", -1, ",");
-		}
-		token = tokenizer.nextToken();
-		return token;
+		reader.close();
 	}
 
 	private void parse() throws Exception {
-		String command = tokenizer.sval;
+		String command_s = tokenizer.sval;
 		int next = tokenizer.nextToken();
 		if (next != ARGUMENT_START) {
-			error("", 0, "");
+			throw new CommandException(tokenizer.lineno(), command_s, -1, "変数の記述が不正です。");
 		}
-		next = tokenizer.nextToken();
-		if (command.equals("チャプター")) {
-			// 文字列 チャプターID
+		if (command_s.equals("チャプター")) {
+			// String チャプターID
+			next = tokenizer.nextToken();
 			if (next != DOUBLE_QUOTE) {
 				// 非文字
-				error("チャプター", 1, "チャプターID");
+				throw new CommandException(tokenizer.lineno(), "チャプター", 1, "引数「チャプターID」は文字列でなければいけません。");
 			} else if (block) {
 				// ブロック内
-				error("チャプター", 0, "");
+				throw new CommandException(tokenizer.lineno(), "チャプター", -1, "「チャプター」コマンドはブロック内に置けません。");
 			} else {
 				chapterID = tokenizer.sval.trim();
 			}
-		} else if (command.equals("シーン")) {
-			// 文字列 シーンID
+			next = tokenizer.nextToken();
+			if (next != SaverStory.ARGUMENT_END) {
+				throw new CommandException(tokenizer.lineno(), "チャプター", -1, "引数が閉じられていません。");
+			}
+		} else if (command_s.equals("シーン")) {
+			// String シーンID
 			commandLine.add(COMMAND_SET_SCENEID);
+			next = tokenizer.nextToken();
 			if (next != DOUBLE_QUOTE) {
 				// 非文字
-				error("シーン", 1, "シーンID");
+				throw new CommandException(tokenizer.lineno(), "シーン", 1, "引数「シーンID」は文字列でなければいけません。");
 			} else if (block) {
 				// ブロック内
-				error("シーン", 0, "");
+				throw new CommandException(tokenizer.lineno(), "シーン", -1, "「シーン」コマンドはブロック内に置けません。");
 			} else {
 				commandLine.add(VarNumManager.SCENE_ID.add(tokenizer.sval));
 			}
-		} else if (command.equals("ロード")) {
-			// 文字列 チャプターID
-			commandLine.add(COMMAND_LOAD_CHAPTER);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("ロード", 1, "チャプターID");
-			} else {
-				commandLine.add(VarNumManager.CHAPTER_ID.add(tokenizer.sval));
+			next = tokenizer.nextToken();
+			if (next != SaverStory.ARGUMENT_END) {
+				throw new CommandException(tokenizer.lineno(), "シーン", -1, "引数が閉じられていません。");
 			}
-		} else if (command.equals("移動")) {
-			// 文字列 チャプターID
-			commandLine.add(COMMAND_MOVE_CHAPTER);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("移動", 1, "チャプターID");
-			} else {
-				commandLine.add(VarNumManager.CHAPTER_ID.add(tokenizer.sval));
+		} else {
+			Command command = commands.get(command_s);
+			if (command == null) {
+				throw new CommandException(tokenizer.lineno(), command_s, -1, "コマンド「" + command_s + "」は定義されていません。");
 			}
-		} else if (command.equals("背景変更")) {
-			// 文字列 画像ID, 数値 対象, 数値 左上X座標, 数値 左上Y座標, 数値 拡大率, 数値 遅延（ms）
-			commandLine.add(COMMAND_CHANGE_BG);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("背景変更", 1, "画像ID");
-			} else {
-				String s = tokenizer.sval;
-				int i = VarNumManager.IMAGE.add(s);
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("背景変更", 2, "対象");
-			} else {
-				int i = (byte) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("背景変更", 3, "左上X座標");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("背景変更", 4, "左上Y座標");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("背景変更", 5, "拡大率");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("背景変更", 6, "遅延");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-		} else if (command.equals("背景エフェクト")) {
-			// 数値 対象, 数値 遅延（ms）, エフェクター エフェクト
-			commandLine.add(COMMAND_EFFECT_BACKGROUND);
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非文字
-				error("画面効果", 1, "対象");
-			} else {
-				byte i = (byte) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("画面効果", 2, "遅延");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_WORD) {
-				error("画面効果", 3, "エフェクト");
-			} else {
-				parse();
-			}
-		} else if (command.equals("エフェクト")) {
-			// 背景変更内フェード
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("エフェクト", 1, "エフェクターID");
-			} else {
-				commandLine.add(tokenizer.sval.hashCode());
-			}
-			while ((next = tokenizer.nextToken()) != ARGUMENT_END) {
-				switch (next) {
-				case StreamTokenizer.TT_EOF:
-				case BLOCK_END:
-				case END:
-					error("エフェクト", 0, "");
-					break;
-				case StreamTokenizer.TT_NUMBER:
-					int i = (int) tokenizer.nval;
-					commandLine.add(i);
-					break;
-				case StreamTokenizer.TT_WORD:
-					commandLine.add(Boolean.parseBoolean(tokenizer.sval));
-					break;
-				case DOUBLE_QUOTE:
-					commandLine.add(tokenizer.sval.hashCode());
-					break;
-				}
-			}
-		} else if (command.equals("キャラ変更")) {
-			// 文字列 キャラID, 数値 対象, 数値 遅延, 文字列 位置ID, 文字列 表情ID, キャラフェーダー　フェード
-			commandLine.add(COMMAND_CHANGE_CHARACTER);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("キャラ変更", 1, "キャラID");
-			} else {
-				commandLine.add(VarNumManager.CHARACTER.add(tokenizer.sval));
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("キャラ変更", 2, "対象");
-			} else {
-				int i = (byte) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("キャラ変更", 3, "遅延");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("キャラ変更", 4, "位置ID");
-			} else {
-				commandLine.add(VarNumManager.CHARACTER_POSITION.add(tokenizer.sval));
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("キャラ変更", 5, "表情ID");
-			} else {
-				commandLine.add(VarNumManager.FACE_TYPE.add(tokenizer.sval));
-			}
-		} else if (command.equals("キャラフェーダー")) {
-			// キャラ変更内フェード
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("キャラフェード", 1, "");
-			} else {
-				commandLine.add(tokenizer.sval.hashCode());
-			}
-			while ((next = tokenizer.nextToken()) != ARGUMENT_END) {
-				switch (next) {
-				case StreamTokenizer.TT_EOF:
-				case BLOCK_END:
-				case END:
-					error("キャラフェード", 0, "");
-					break;
-				case StreamTokenizer.TT_NUMBER:
-					int i = (int) tokenizer.nval;
-					commandLine.add(i);
-					break;
-				case StreamTokenizer.TT_WORD:
-					commandLine.add(Boolean.parseBoolean(tokenizer.sval));
-					break;
-				case DOUBLE_QUOTE:
-					commandLine.add(tokenizer.sval.hashCode());
-					break;
-				}
-			}
-		} else if (command.equals("キャラ移動")) {
-			// 数値 優先度, 数値 遅延, 文字列 移動前位置ID, 文字列 移動後位置ID, 数値 時間, 真偽値 加速
-			commandLine.add(COMMAND_MOVE_CHARACTER);
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("キャラ移動", 1, "優先度");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("キャラ移動", 2, "遅延");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("キャラ移動", 3, "移動前位置ID");
-			} else {
-				commandLine.add(tokenizer.sval.hashCode());
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("キャラ移動", 4, "移動後位置ID");
-			} else {
-				commandLine.add(tokenizer.sval.hashCode());
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("キャラ移動", 5, "時間");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_WORD) {
-				// 真偽値
-				error("キャラ移動", 6, "加速");
-			} else {
-				commandLine.add(Boolean.parseBoolean(tokenizer.sval));
-			}
-		} else if (command.equals("キャラアクション")) {
-
-		} else if (command.equals("CG表示")) {
-			// 文字列 CGID
-			commandLine.add(COMMAND_SHOW_CG);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("CG表示", 1, "CGID");
-			} else {
-				commandLine.add(tokenizer.sval.hashCode());
-			}
-		} else if (command.equals("セリフ")) {
-			// 文字列 キャラID, 文字列 表示文字列
-			commandLine.add(COMMAND_SHOW_WORDS);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("セリフ", 1, "キャラID");
-			} else {
-				commandLine.add(VarNumManager.CHARACTER.add(tokenizer.sval));
-			}
-			// next = nextToken();
-			// if (next != DOUBLE_QUOTE) {
-			// // 非文字
-			// error("セリフ", 2, "音声ID");
-			// } else {
-			// String s = "Voice_" + tokenizer.sval;
-			// commandLine.add(s.hashCode());
-			// }
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("セリフ", 2, "表示文字列");
-			} else {
-				commandLine.add(tokenizer.sval);
-			}
-		} else if (command.equals("ボタン")) {
-			commandLine.add(COMMAND_MAKE_BUTTON);
-			int button_num = 0;
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("ボタン", 1, "ボタン数");
-			} else {
-				button_num = (int) tokenizer.nval;
-				commandLine.add(button_num);
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("ボタン", 2, "配置");
-			} else {
-				commandLine.add(VarNumManager.BUTTON_POSITION.add(tokenizer.sval));
-			}
-			for (int i = 0; i < button_num; i++) {
-				next = nextToken();
-				if (next != DOUBLE_QUOTE) {
-					// 非文字
-					error("ボタン", button_num, "ボタンID");
-				} else {
-					commandLine.add(VarNumManager.BUTTON.add(tokenizer.sval));
-				}
-				next = nextToken();
-				if (next != DOUBLE_QUOTE) {
-					// 非文字
-					error("ボタン", button_num, "移動先シーンID");
-				} else {
-					commandLine.add(VarNumManager.SCENE_ID.add(tokenizer.sval));
-				}
-			}
-
-		} else if (command.equals("もし")) {
-			// 文字列 条件, 数値 真, 数値 偽
-			commandLine.add(COMMAND_IF);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("もし", 1, "条件");
-			} else {
-				String condition = searchCondition(tokenizer.sval);
-				String[] args = tokenizer.sval.split(condition);
-				if (args.length != 2) {
-					// 条件不足
-					error("もし", 1, "条件式");
-				}
-				commandLine.add(parseCondition(condition));
-				parseVariable(args[0]);
-				parseVariable(args[1]);
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("もし", 2, "移動先シーンID（真）");
-			} else {
-				commandLine.add(VarNumManager.SCENE_ID.add(tokenizer.sval));
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("もし", 3, "移動先シーンID（偽）");
-			} else {
-				commandLine.add(VarNumManager.SCENE_ID.add(tokenizer.sval));
-			}
-		} else if (command.equals("BGM再生")) {
-			// 文字列 音楽ID
-			commandLine.add(COMMAND_PLAY_BGM);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("BGM再生", 1, "音楽ID");
-			} else {
-				String s = tokenizer.sval;
-				int i = VarNumManager.SOUND.add(s);
-				commandLine.add(i);
-			}
-		} else if (command.equals("BGM停止")) {
-			// 文字列 音楽ID
-			commandLine.add(COMMAND_STOP_BGM);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("BGM停止", 1, "音楽ID");
-			} else {
-				String id = "m_" + tokenizer.sval;
-				commandLine.add(id.hashCode());
-			}
-		} else if (command.equals("SE再生")) {
-			// 文字列 効果音ID
-			commandLine.add(COMMAND_PLAY_SE);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("SE再生", 1, "効果音ID");
-			} else {
-				String s = tokenizer.sval;
-				int i = VarNumManager.SOUND.add(s);
-				commandLine.add(i);
-			}
-		} else if (command.equals("ボックス表示")) {
-			commandLine.add(COMMAND_SHOW_BOX);
-		} else if (command.equals("ボックス閉じる")) {
-			commandLine.add(COMMAND_HIDE_BOX);
-		} else if (command.equals("設定")) {
-			// 文字列 変数名, 数値 設定値
-			commandLine.add(COMMAND_SET_VARIABLE);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("設定", 1, "変数名");
-			} else {
-				String[] var = tokenizer.sval.split("\\.");
-				int varType = parseVariableType(var[0]);
-				commandLine.add(varType);
-				commandLine.add(var[1]);
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("設定", 2, "設定値");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-		} else if (command.equals("背景色")) {
-			// 数値 対象, 文字列 色(HTML/定義済み/3数字), 数値 アルファ値
-			commandLine.add(COMMAND_SET_BACKGROUND_COLOR);
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("背景色", 1, "対象");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-			next = nextToken();
-			Color color = null;
-			if (next == DOUBLE_QUOTE) {
-				// 文字列表現
-				String c = tokenizer.sval;
-				if (c.startsWith("#")) {
-					// HTML表記
-					color = Color.decode(c);
-				} else {
-					// 定義済み
-					Class<Color> c_class = Color.class;
-					Field f = c_class.getField(c);
-					color = (Color) f.get(null);
-				}
-			} else if (next == StreamTokenizer.TT_NUMBER) {
-				// 3数字RGB表現
-				int r = (int) tokenizer.nval;
-				next = nextToken();
-				if (next != StreamTokenizer.TT_NUMBER) {
-					// 非数値
-					error("背景色", 2, "G");
-				}
-				int g = (int) tokenizer.nval;
-
-				next = nextToken();
-				if (next != StreamTokenizer.TT_NUMBER) {
-					// 非数値
-					error("背景色", 3, "B");
-				}
-				int b = (int) tokenizer.nval;
-				color = new Color(r, g, b);
-			} else {
-				error("背景色", 1, "文字列表現/R");
-			}
-			commandLine.add(color.getRGB());
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("背景透明度", 2, "アルファ値");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-
-			}
-		} else if (command.equals("乱数")) {
-			// 文字列 変数名, 数値 範囲
-			commandLine.add(COMMAND_RANDOM);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("乱数", 1, "変数名");
-			} else {
-				String[] var = tokenizer.sval.split("\\.");
-				byte varType = parseVariableType(var[0]);
-				commandLine.add(varType);
-				commandLine.add(Integer.parseInt(var[1]));
-			}
-			next = nextToken();
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("乱数", 2, "個数");
-			} else {
-				int i = (int) tokenizer.nval;
-				commandLine.add(i);
-			}
-		} else if (command.equals("計算")) {
-			// 文字列 変数名, 文字列 計算式
-			commandLine.add(COMMAND_CALCULATION);
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("計算", 1, "変数名");
-			} else {
-				String[] var = tokenizer.sval.split("\\.");
-				int varType = parseVariableType(var[0]);
-				commandLine.add(varType);
-				commandLine.add(Integer.parseInt(var[1]));
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("計算", 1, "計算式");
-			} else {
-				String operation = searchOperation(tokenizer.sval);
-				String[] args = tokenizer.sval.split(operation);
-				if (args.length != 2) {
-					// 条件不足
-					error("計算", 1, "計算式");
-				}
-				commandLine.add(parseOperation(operation));
-				parseVariable(args[0]);
-				parseVariable(args[1]);
-			}
-		} else if (command.equals("終了")) {
-			// 真偽値 確認
-			commandLine.add(COMMAND_EXIT);
-			if (next != StreamTokenizer.TT_WORD) {
-				// 真偽値
-				error("終了", 1, "確認");
-			} else {
-				commandLine.add(Boolean.parseBoolean(tokenizer.sval));
-			}
-		} else if (command.equals("待機")) {
-			// 数値 待機時間, 文字列 単位
-			commandLine.add(COMMAND_WAIT);
-			int time = 0;
-			if (next != StreamTokenizer.TT_NUMBER) {
-				// 非数値
-				error("待機", 1, "待機時間");
-			} else {
-				time = (int) tokenizer.nval;
-			}
-			next = nextToken();
-			if (next != DOUBLE_QUOTE) {
-				// 非文字
-				error("待機", 2, "単位");
-			} else {
-				String prefix = tokenizer.sval;
-				if (prefix.toLowerCase().equals("s")) {
-					// 秒
-					commandLine.add(time * 1000);
-				} else if (prefix.toLowerCase().equals("ms")) {
-					// ミリ秒
-					commandLine.add(time);
-				} else {
-					error("待機", 2, "単位");
-				}
-			}
+			command.save(tokenizer, commandLine);
+		}
+		// ;確認
+		if (tokenizer.nextToken() != SaverStory.END) {
+			throw new CommandException(tokenizer.lineno(), command_s, -1, "コマンドが終了されていません。");
 		}
 	}
 
-	private byte parseVariableType(String var) {
+	public static byte parseVariableType(String var) {
 		if (var.equals("global")) {
 			return VARIABLE_GLOBAL;
 		} else if (var.equals("private")) {
@@ -775,7 +299,7 @@ public class SaverStory extends Saver {
 		return VARIABLE_TEMP;
 	}
 
-	private void parseVariable(String variable) {
+	public static void parseVariable(String variable, LinkedList<Object> commandLine) {
 		String[] s = variable.trim().split("\\.");
 		if (s.length == 2) {
 			// 変数
@@ -789,17 +313,7 @@ public class SaverStory extends Saver {
 		}
 	}
 
-
-	private void error(String comName, int argNum, String string2) throws Exception {
-		System.err.println("---構文エラー---");
-		System.err.println("行番号:" + tokenizer.lineno());
-		System.err.println("コマンド名:" + comName);
-		System.err.println("引数:" + string2 + " (" + argNum + ")");
-		System.err.println();
-		throw new Exception();
-	}
-
-	private String searchCondition(String s) {
+	public static String searchCondition(String s) {
 		for (String condition : SUPPORTED_IF_OPERATOR) {
 			if (s.contains(condition)) {
 				return condition;
@@ -808,7 +322,7 @@ public class SaverStory extends Saver {
 		return null;
 	}
 
-	private byte parseCondition(String condition) {
+	public static byte parseCondition(String condition) {
 		if (condition.equals("=") || condition.equals("＝")) {
 			return IF_EQUAL;
 		} else if (condition.equals("<=") || condition.equals("＜＝") || condition.equals("≦")) {
@@ -824,7 +338,7 @@ public class SaverStory extends Saver {
 		}
 	}
 
-	private String searchOperation(String s) {
+	public static String searchOperation(String s) {
 		for (String operation : SUPPORTED_OPERATOR) {
 			if (s.contains(operation)) {
 				return operation;
@@ -833,7 +347,7 @@ public class SaverStory extends Saver {
 		return null;
 	}
 
-	private int parseOperation(String operation) {
+	public static int parseOperation(String operation) {
 		if (operation.equals("+") || operation.equals("＋")) {
 			return OPERATOR_PLUS;
 		} else if (operation.equals("-") || operation.equals("－")) {

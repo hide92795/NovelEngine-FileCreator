@@ -10,10 +10,10 @@ NovelEngine Project
 
 使用ライブラリ
 --------
-[MessagePack](http://msgpack.org/) by FURUHASHI Sadayuki and Muga Nishizawa (Apache License v2.0)  
-[JSON.simple](http://code.google.com/p/json-simple/) by Yidong Fang (Apache License v2.0)  
-[Javassist](http://code.google.com/p/json-simple/) by Shigeru Chiba (Apache License v2.0)  
-[SnakeYAML](https://www.slf4j.org/) by SnakeYAML Team (Apache License v2.0)  
+[MessagePack](http://msgpack.org/) (Apache License v2.0)  
+[JSON.simple](http://code.google.com/p/json-simple/) (Apache License v2.0)  
+[Javassist](http://code.google.com/p/json-simple/) (Apache License v2.0)  
+[SnakeYAML](https://www.slf4j.org/) (Apache License v2.0)  
 
 ライセンス
 ----------
