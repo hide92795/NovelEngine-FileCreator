@@ -36,7 +36,7 @@ public abstract class Saver {
 		}
 	}
 
-	public static CipherOutputStream createCipherInputStream(File file, Properties crypt) throws IOException,
+	protected static CipherOutputStream createCipherInputStream(File file, Properties crypt) throws IOException,
 			NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
 		SecretKeySpec key = new SecretKeySpec(crypt.getProperty("key").getBytes(), "AES");
 		FileOutputStream fos = new FileOutputStream(file);

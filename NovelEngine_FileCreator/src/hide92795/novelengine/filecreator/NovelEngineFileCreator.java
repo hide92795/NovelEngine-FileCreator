@@ -9,6 +9,7 @@ import hide92795.novelengine.filecreator.saver.SaverGui;
 import hide92795.novelengine.filecreator.saver.SaverImage;
 import hide92795.novelengine.filecreator.saver.SaverSound;
 import hide92795.novelengine.filecreator.saver.SaverStory;
+import hide92795.novelengine.filecreator.saver.SaverVoice;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,7 +18,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public class NovelEngineFileCreator {
-	private static final String VERSION = "a1.3.1";
+	private static final String VERSION = "a1.4.0";
 	private Properties project;
 	private File output;
 	private Properties cryptProp;
@@ -69,13 +70,14 @@ public class NovelEngineFileCreator {
 
 	private void initFolder() throws IOException, InterruptedException {
 		delete(new File("output"));
+		Thread.sleep(500);
 		output = new File("output");
 		output.mkdir();
 		new File(output, "img").mkdir();
 		new File(output, "sound").mkdir();
 		new File(output, "object").mkdir();
 		new File(output, "story").mkdir();
-
+		new File(output, "voice").mkdir();
 		Thread.sleep(500);
 	}
 
@@ -168,10 +170,23 @@ public class NovelEngineFileCreator {
 			TimeManager.end("Complete. (", "sec)");
 			System.out.println();
 
+			System.out.println("Creating voice data...");
+			TimeManager.start();
+			novelEngineFileCreator.createVoiceData();
+			TimeManager.end("Complete. (", "sec)");
+			System.out.println();
+
 			System.out.println("Finish all process!");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void createVoiceData() throws Exception {
+		File outputDir = new File(output, "voice");
+		File root = new File(path, "Voice");
+		SaverVoice saver = new SaverVoice(outputDir, cryptProp, root);
+		saver.pack();
 	}
 
 	private void createFontData() throws Exception {

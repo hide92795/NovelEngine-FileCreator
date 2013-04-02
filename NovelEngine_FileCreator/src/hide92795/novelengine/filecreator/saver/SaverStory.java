@@ -21,6 +21,7 @@ import hide92795.novelengine.filecreator.saver.story.CommandRandom;
 import hide92795.novelengine.filecreator.saver.story.CommandShowBox;
 import hide92795.novelengine.filecreator.saver.story.CommandShowWords;
 import hide92795.novelengine.filecreator.saver.story.CommandStopBGM;
+import hide92795.novelengine.filecreator.saver.story.CommandVoice;
 import hide92795.novelengine.filecreator.saver.story.CommandWait;
 import java.io.File;
 import java.io.FileReader;
@@ -42,7 +43,9 @@ public class SaverStory extends Saver {
 		commands.put("移動", new CommandMoveChapter());
 		commands.put("背景変更", new CommandChangeBackGround());
 		commands.put("キャラ変更", new CommandChangeCharacter());
-		//
+		commands.put("ボイス", new CommandVoice());
+		// 8
+		// 9
 		commands.put("セリフ", new CommandShowWords());
 		commands.put("ボタン", new CommandButton());
 		commands.put("もし", new CommandIF());
@@ -113,7 +116,7 @@ public class SaverStory extends Saver {
 	public static final byte COMMAND_MOVE_CHAPTER = 4;
 	public static final byte COMMAND_CHANGE_BG = 5;
 	public static final byte COMMAND_CHANGE_CHARACTER = 6;
-	public static final byte COMMAND_MOVE_CHARACTER = 7;
+	public static final byte COMMAND_VOICE = 7;
 	public static final byte COMMAND_EFFECT_CHARACTER = 8;
 	public static final byte COMMAND_SHOW_CG = 9;
 	public static final byte COMMAND_SHOW_WORDS = 10;

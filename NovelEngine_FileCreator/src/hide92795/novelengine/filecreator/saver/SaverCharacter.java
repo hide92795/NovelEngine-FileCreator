@@ -52,8 +52,6 @@ public class SaverCharacter extends Saver {
 		fis.close();
 
 		// キャラクターデータ
-		VarNumManager.CHARACTER.add("reimu");
-
 		HashMap<String, Integer> characters = VarNumManager.CHARACTER.getMap();
 		Set<String> characters_ks = characters.keySet();
 
@@ -87,6 +85,5 @@ public class SaverCharacter extends Saver {
 
 		p.flush();
 		p.close();
-
 	}
 }
