@@ -12,16 +12,9 @@ public class CommandChangeCharacter extends Command {
 		// String キャラID, byte 対象, int 遅延, String 位置ID, String 表情ID
 		commandLine.add(SaverStory.COMMAND_CHANGE_CHARACTER);
 		int next = tokenizer.nextToken();
-		if (next != SaverStory.DOUBLE_QUOTE) {
-			// 非文字
-			throw new CommandException(tokenizer.lineno(), "キャラ変更", 1, "引数「キャラID」は文字列でなければいけません。");
-		} else {
-			commandLine.add(VarNumManager.CHARACTER.add(tokenizer.sval));
-		}
-		next = nextArgument(tokenizer);
 		if (next != StreamTokenizer.TT_NUMBER) {
 			// 非数値
-			throw new CommandException(tokenizer.lineno(), "キャラ変更", 2, "引数「対象」は数値でなければいけません。");
+			throw new CommandException(tokenizer.lineno(), "キャラ変更", 1, "引数「対象」は数値でなければいけません。");
 		} else {
 			int i = (byte) tokenizer.nval;
 			commandLine.add(i);
@@ -29,10 +22,17 @@ public class CommandChangeCharacter extends Command {
 		next = nextArgument(tokenizer);
 		if (next != StreamTokenizer.TT_NUMBER) {
 			// 非数値
-			throw new CommandException(tokenizer.lineno(), "キャラ変更", 3, "引数「遅延」は数値でなければいけません。");
+			throw new CommandException(tokenizer.lineno(), "キャラ変更", 2, "引数「遅延」は数値でなければいけません。");
 		} else {
 			int i = (int) tokenizer.nval;
 			commandLine.add(i);
+		}
+		next = nextArgument(tokenizer);
+		if (next != SaverStory.DOUBLE_QUOTE) {
+			// 非文字
+			throw new CommandException(tokenizer.lineno(), "キャラ変更", 3, "引数「キャラID」は文字列でなければいけません。");
+		} else {
+			commandLine.add(VarNumManager.CHARACTER.add(tokenizer.sval));
 		}
 		next = nextArgument(tokenizer);
 		if (next != SaverStory.DOUBLE_QUOTE) {
