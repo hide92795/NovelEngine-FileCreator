@@ -15,13 +15,13 @@ import org.msgpack.packer.Packer;
 
 public class SaverGui extends Saver {
 
-	public SaverGui(File output, Properties crypt) {
-		super(output, crypt);
+	public SaverGui(File output, Properties crypt, String encoding) {
+		super(output, crypt, encoding);
 	}
 
 	@Override
 	public void pack() throws Exception {
-		CipherOutputStream cos =createCipherInputStream(new File(output, "gui.neo"), crypt);
+		CipherOutputStream cos = createCipherInputStream(new File(output, "gui.neo"), crypt);
 
 		MessagePack msgpack = new MessagePack();
 		Packer p = msgpack.createPacker(cos);

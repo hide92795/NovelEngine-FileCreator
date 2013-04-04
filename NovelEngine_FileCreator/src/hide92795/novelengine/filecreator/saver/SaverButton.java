@@ -2,8 +2,10 @@ package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.FileExtensionFilter;
 import hide92795.novelengine.filecreator.VarNumManager;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Properties;
 import javax.crypto.CipherOutputStream;
@@ -14,8 +16,8 @@ import org.yaml.snakeyaml.Yaml;
 public class SaverButton extends Saver {
 	private File path;
 
-	public SaverButton(File output, Properties crypt, File path) {
-		super(output, crypt);
+	public SaverButton(File output, Properties crypt, File path, String encoding) {
+		super(output, crypt, encoding);
 		this.path = path;
 	}
 
@@ -32,9 +34,9 @@ public class SaverButton extends Saver {
 		p.write(buttons.length);
 
 		for (File button : buttons) {
-			FileInputStream fis = new FileInputStream(button);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(button), encoding));
 			Properties prop = new Properties();
-			prop.load(fis);
+			prop.load(reader);
 			String imageNormal = prop.getProperty("ImageNormal");
 			String imageOnMouse = prop.getProperty("ImageOnMouse");
 			String imageDisabled = prop.getProperty("ImageDisabled");
@@ -56,7 +58,7 @@ public class SaverButton extends Saver {
 			int width = Integer.valueOf(width_s);
 			int height = Integer.valueOf(height_s);
 
-			fis.close();
+			reader.close();
 
 			p.write(VarNumManager.BUTTON.add(removeFileExtension(button.getName())));
 			p.write(imageNormalID);

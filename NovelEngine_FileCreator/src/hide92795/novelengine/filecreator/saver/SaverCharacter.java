@@ -1,8 +1,10 @@
 package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.VarNumManager;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -18,8 +20,8 @@ public class SaverCharacter extends Saver {
 
 	private File path;
 
-	public SaverCharacter(File output, Properties crypt, File path) {
-		super(output, crypt);
+	public SaverCharacter(File output, Properties crypt, File path, String encoding) {
+		super(output, crypt, encoding);
 		this.path = path;
 	}
 
@@ -34,9 +36,9 @@ public class SaverCharacter extends Saver {
 		File position = new File(path, "position");
 		position = new File(position, "position.yml");
 
-		FileInputStream fis = new FileInputStream(position);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(position), encoding));
 		Yaml yaml = new Yaml();
-		Map<?, ?> map = (Map<?, ?>) yaml.load(fis);
+		Map<?, ?> map = (Map<?, ?>) yaml.load(reader);
 		Set<?> set = map.keySet();
 
 		p.write(set.size());
@@ -49,7 +51,7 @@ public class SaverCharacter extends Saver {
 			p.write(pos.get("y"));
 		}
 
-		fis.close();
+		reader.close();
 
 		// キャラクターデータ
 		HashMap<String, Integer> characters = VarNumManager.CHARACTER.getMap();

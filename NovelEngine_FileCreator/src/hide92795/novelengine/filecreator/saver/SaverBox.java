@@ -2,8 +2,10 @@ package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.FileExtensionFilter;
 import hide92795.novelengine.filecreator.VarNumManager;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Properties;
 import javax.crypto.CipherOutputStream;
@@ -16,8 +18,8 @@ public class SaverBox extends Saver {
 	public static final int NAME_CENTER = 1;
 	private File path;
 
-	public SaverBox(File output, Properties crypt, File path) {
-		super(output, crypt);
+	public SaverBox(File output, Properties crypt, File path, String encoding) {
+		super(output, crypt, encoding);
 		this.path = path;
 	}
 
@@ -36,8 +38,8 @@ public class SaverBox extends Saver {
 		p.write(buttons.length);
 
 		for (File box : buttons) {
-			FileInputStream fis = new FileInputStream(box);
-			Map<?, ?> map = (Map<?, ?>) yaml.load(fis);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(box), encoding));
+			Map<?, ?> map = (Map<?, ?>) yaml.load(reader);
 
 			int id = (Integer) map.get("ID");
 
@@ -131,7 +133,7 @@ public class SaverBox extends Saver {
 			p.write(hideMoveY);
 			p.write(hideMoveAlpha);
 
-			fis.close();
+			reader.close();
 		}
 
 		p.write(defaultId);

@@ -23,8 +23,10 @@ import hide92795.novelengine.filecreator.saver.story.CommandShowWords;
 import hide92795.novelengine.filecreator.saver.story.CommandStopBGM;
 import hide92795.novelengine.filecreator.saver.story.CommandVoice;
 import hide92795.novelengine.filecreator.saver.story.CommandWait;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -137,8 +139,8 @@ public class SaverStory extends Saver {
 
 	private final File src;
 
-	public SaverStory(File src, File output, Properties crypt) {
-		super(output, crypt);
+	public SaverStory(File src, File output, Properties crypt, String encoding) {
+		super(output, crypt, encoding);
 		this.src = src;
 		commandLine = new LinkedList<Object>();
 
@@ -146,7 +148,7 @@ public class SaverStory extends Saver {
 
 	@Override
 	public void pack() throws Exception {
-		FileReader reader = new FileReader(src);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(src), encoding));
 		tokenizer = new StreamTokenizer(reader);
 		tokenizer.resetSyntax();
 

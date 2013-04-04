@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class CommandChangeCharacter extends Command {
 	@Override
 	public void save(StreamTokenizer tokenizer, LinkedList<Object> commandLine) throws Exception {
-		// String キャラID, byte 対象, int 遅延, String 位置ID, String 表情ID
+		// byte 対象, int 遅延, String キャラID, String 位置ID, String 表情ID
 		commandLine.add(SaverStory.COMMAND_CHANGE_CHARACTER);
 		int next = tokenizer.nextToken();
 		if (next != StreamTokenizer.TT_NUMBER) {

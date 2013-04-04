@@ -9,8 +9,8 @@ public class SaverImage extends Saver {
 	private final File src;
 	private final int id;
 
-	public SaverImage(File output, Properties crypt, File src, int id) {
-		super(output, crypt);
+	public SaverImage(File output, Properties crypt, File src, int id, String encoding) {
+		super(output, crypt, encoding);
 		this.src = src;
 		this.id = id;
 	}

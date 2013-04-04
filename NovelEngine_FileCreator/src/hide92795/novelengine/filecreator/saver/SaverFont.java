@@ -2,9 +2,11 @@ package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.VarNumManager;
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -33,8 +35,8 @@ public class SaverFont extends Saver {
 	public static final int TEXT_EDGED = 2;
 	private File path;
 
-	public SaverFont(File output, Properties crypt, File path) {
-		super(output, crypt);
+	public SaverFont(File output, Properties crypt, File path, String encoding) {
+		super(output, crypt, encoding);
 		this.path = path;
 	}
 
@@ -48,8 +50,9 @@ public class SaverFont extends Saver {
 		Yaml yaml = new Yaml();
 
 		// フォント読み込み
-		FileInputStream fis = new FileInputStream(new File(path, "font.yml"));
-		Map<?, ?> map = (Map<?, ?>) yaml.load(fis);
+		File file = new File(path, "font.yml");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding));
+		Map<?, ?> map = (Map<?, ?>) yaml.load(reader);
 
 		Set<?> key = map.keySet();
 
@@ -119,9 +122,9 @@ public class SaverFont extends Saver {
 		Set<String> fonts = fontsMap.keySet();
 
 		for (String filename : fonts) {
-			File file = new File(path, filename);
+			File fontFile = new File(path, filename);
 
-			FileInputStream fis1 = new FileInputStream(file);
+			FileInputStream fis1 = new FileInputStream(fontFile);
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 			CRC32 crc = new CRC32();
@@ -133,7 +136,7 @@ public class SaverFont extends Saver {
 			}
 
 			ZipEntry ze = new ZipEntry(fontsMap.get(filename).toString());
-			ze.setSize(file.length());
+			ze.setSize(fontFile.length());
 			ze.setCrc(crc.getValue());
 
 			zos.putNextEntry(ze);
@@ -144,7 +147,7 @@ public class SaverFont extends Saver {
 
 		zos.flush();
 		cos.close();
-		fis.close();
+		reader.close();
 	}
 
 	private int getDecorationType(String decorationType_s) {

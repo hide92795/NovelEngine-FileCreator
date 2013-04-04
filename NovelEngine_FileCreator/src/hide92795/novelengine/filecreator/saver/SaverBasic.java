@@ -24,8 +24,8 @@ public class SaverBasic extends Saver {
 	private Properties property;
 	private File path;
 
-	public SaverBasic(Properties property, File output, Properties crypt, File path) {
-		super(output, crypt);
+	public SaverBasic(Properties property, File output, Properties crypt, File path, String encoding) {
+		super(output, crypt, encoding);
 		this.property = property;
 		this.path = path;
 	}

@@ -14,17 +14,19 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public abstract class Saver {
-	public final File output;
-	public final Properties crypt;
+	protected final File output;
+	protected final Properties crypt;
+	protected final String encoding;
 
-	public Saver(File output, Properties crypt) {
+	public Saver(File output, Properties crypt, String encoding) {
 		this.output = output;
 		this.crypt = crypt;
+		this.encoding = encoding;
 	}
 
 	public abstract void pack() throws Exception;
 
-	public static String removeFileExtension(String filename) {
+	protected static String removeFileExtension(String filename) {
 		int lastDotPos = filename.lastIndexOf('.');
 
 		if (lastDotPos == -1) {

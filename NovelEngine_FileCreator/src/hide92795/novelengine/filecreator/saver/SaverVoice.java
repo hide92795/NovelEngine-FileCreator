@@ -11,8 +11,8 @@ import javax.crypto.CipherOutputStream;
 public class SaverVoice extends Saver {
 	private File path;
 
-	public SaverVoice(File output, Properties crypt, File path) {
-		super(output, crypt);
+	public SaverVoice(File output, Properties crypt, File path, String encoding) {
+		super(output, crypt, encoding);
 		this.path = path;
 	}
 
