@@ -63,8 +63,9 @@ public class SaverCharacter extends Saver {
 			p.write(characters.get(character_s));
 
 			File character = new File(path, character_s + ".yml");
-			FileInputStream fis_c = new FileInputStream(character);
-			Map<?, ?> map_c = (Map<?, ?>) yaml.load(fis_c);
+			BufferedReader reader_c = new BufferedReader(
+					new InputStreamReader(new FileInputStream(character), encoding));
+			Map<?, ?> map_c = (Map<?, ?>) yaml.load(reader_c);
 
 			p.write(map_c.get("Name"));
 			p.write(VarNumManager.FONT.add(map_c.get("Font").toString()));
@@ -82,7 +83,7 @@ public class SaverCharacter extends Saver {
 					p.write(VarNumManager.IMAGE.add(image.toString()));
 				}
 			}
-			fis_c.close();
+			reader_c.close();
 		}
 
 		p.flush();

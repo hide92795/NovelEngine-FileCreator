@@ -9,6 +9,7 @@ import hide92795.novelengine.filecreator.saver.story.CommandButton;
 import hide92795.novelengine.filecreator.saver.story.CommandCalculation;
 import hide92795.novelengine.filecreator.saver.story.CommandChangeBackGround;
 import hide92795.novelengine.filecreator.saver.story.CommandChangeBackGroundColor;
+import hide92795.novelengine.filecreator.saver.story.CommandChangeBackGroundFigure;
 import hide92795.novelengine.filecreator.saver.story.CommandChangeCharacter;
 import hide92795.novelengine.filecreator.saver.story.CommandExit;
 import hide92795.novelengine.filecreator.saver.story.CommandHideBox;
@@ -46,8 +47,8 @@ public class SaverStory extends Saver {
 		commands.put("背景変更", new CommandChangeBackGround());
 		commands.put("キャラ変更", new CommandChangeCharacter());
 		commands.put("ボイス", new CommandVoice());
-		// 8
-		// 9
+		// 8 COMMAND_EFFECT_CHARACTER
+		commands.put("背景範囲", new CommandChangeBackGroundFigure());
 		commands.put("セリフ", new CommandShowWords());
 		commands.put("ボタン", new CommandButton());
 		commands.put("もし", new CommandIF());
@@ -116,11 +117,11 @@ public class SaverStory extends Saver {
 	public static final byte COMMAND_SET_SCENEID = 2;
 	public static final byte COMMAND_LOAD_CHAPTER = 3;
 	public static final byte COMMAND_MOVE_CHAPTER = 4;
-	public static final byte COMMAND_CHANGE_BG = 5;
-	public static final byte COMMAND_CHANGE_CHARACTER = 6;
+	public static final byte COMMAND_SET_BACKGROUND = 5;
+	public static final byte COMMAND_SET_CHARACTER = 6;
 	public static final byte COMMAND_VOICE = 7;
 	public static final byte COMMAND_EFFECT_CHARACTER = 8;
-	public static final byte COMMAND_SHOW_CG = 9;
+	public static final byte COMMAND_SET_BACKGROUND_FIGURE = 9;
 	public static final byte COMMAND_SHOW_WORDS = 10;
 	public static final byte COMMAND_MAKE_BUTTON = 11;
 	public static final byte COMMAND_IF = 12;

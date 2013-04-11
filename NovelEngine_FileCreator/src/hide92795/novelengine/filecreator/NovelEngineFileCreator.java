@@ -4,6 +4,7 @@ import hide92795.novelengine.filecreator.saver.SaverBasic;
 import hide92795.novelengine.filecreator.saver.SaverBox;
 import hide92795.novelengine.filecreator.saver.SaverButton;
 import hide92795.novelengine.filecreator.saver.SaverCharacter;
+import hide92795.novelengine.filecreator.saver.SaverFigure;
 import hide92795.novelengine.filecreator.saver.SaverFont;
 import hide92795.novelengine.filecreator.saver.SaverGui;
 import hide92795.novelengine.filecreator.saver.SaverImage;
@@ -20,7 +21,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public class NovelEngineFileCreator {
-	private static final String VERSION = "a1.4.1";
+	private static final String VERSION = "a1.5.0";
 	private Properties project;
 	private File output;
 	private Properties cryptProp;
@@ -158,6 +159,12 @@ public class NovelEngineFileCreator {
 			TimeManager.end("Complete. (", "sec)");
 			System.out.println();
 
+			System.out.println("Creating figure data...");
+			TimeManager.start();
+			novelEngineFileCreator.createFigireData();
+			TimeManager.end("Complete. (", "sec)");
+			System.out.println();
+
 			System.out.println("Creating chracter data...");
 			TimeManager.start();
 			novelEngineFileCreator.createCharacterData();
@@ -186,6 +193,13 @@ public class NovelEngineFileCreator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void createFigireData() throws Exception {
+		File outputDir = new File(output, "object");
+		File root = new File(path, "Figure");
+		SaverFigure saver = new SaverFigure(outputDir, cryptProp, encoding, root);
+		saver.pack();
 	}
 
 	private void createVoiceData() throws Exception {

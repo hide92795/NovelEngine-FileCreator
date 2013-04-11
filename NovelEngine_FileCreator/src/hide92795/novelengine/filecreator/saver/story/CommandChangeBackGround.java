@@ -10,13 +10,13 @@ public class CommandChangeBackGround extends Command {
 	@Override
 	public void save(StreamTokenizer tokenizer, LinkedList<Object> commandLine) throws Exception {
 		// byte 対象, int 遅延, String 画像ID, int 左上X座標, int 左上Y座標, int 拡大率,
-		commandLine.add(SaverStory.COMMAND_CHANGE_BG);
+		commandLine.add(SaverStory.COMMAND_SET_BACKGROUND);
 		int next = tokenizer.nextToken();
 		if (next != StreamTokenizer.TT_NUMBER) {
 			// 非数値
 			throw new CommandException(tokenizer.lineno(), "背景変更", 1, "引数「対象」は数値でなければいけません。");
 		} else {
-			int i = (byte) tokenizer.nval;
+			byte i = (byte) tokenizer.nval;
 			commandLine.add(i);
 		}
 		next = nextArgument(tokenizer);

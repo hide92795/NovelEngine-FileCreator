@@ -17,7 +17,7 @@ public class CommandChangeBackGroundColor extends Command {
 			// 非数値
 			throw new CommandException(tokenizer.lineno(), "背景色", 1, "引数「対象」は数値でなければいけません。");
 		} else {
-			int i = (int) tokenizer.nval;
+			byte i = (byte) tokenizer.nval;
 			commandLine.add(i);
 		}
 		next = nextArgument(tokenizer);
