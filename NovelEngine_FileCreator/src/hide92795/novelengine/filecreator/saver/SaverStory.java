@@ -22,6 +22,8 @@ import hide92795.novelengine.filecreator.saver.story.CommandRandom;
 import hide92795.novelengine.filecreator.saver.story.CommandShowBox;
 import hide92795.novelengine.filecreator.saver.story.CommandShowWords;
 import hide92795.novelengine.filecreator.saver.story.CommandStopBGM;
+import hide92795.novelengine.filecreator.saver.story.CommandSystemLoad;
+import hide92795.novelengine.filecreator.saver.story.CommandSystemSave;
 import hide92795.novelengine.filecreator.saver.story.CommandVoice;
 import hide92795.novelengine.filecreator.saver.story.CommandWait;
 import java.io.BufferedReader;
@@ -64,6 +66,8 @@ public class SaverStory extends Saver {
 		commands.put("計算", new CommandCalculation());
 		commands.put("終了", new CommandExit());
 		commands.put("待機", new CommandWait());
+		commands.put("システムセーブ", new CommandSystemSave());
+		commands.put("システムロード", new CommandSystemLoad());
 	}
 	private LinkedList<Object> commandLine;
 	private StreamTokenizer tokenizer;
@@ -137,6 +141,8 @@ public class SaverStory extends Saver {
 	public static final byte COMMAND_CALCULATION = 22;
 	public static final byte COMMAND_EXIT = 23;
 	public static final byte COMMAND_WAIT = 24;
+	public static final byte COMMAND_SYSTEM_LOAD = 25;
+	public static final byte COMMAND_SYSTEM_SAVE = 26;
 
 	private final File src;
 

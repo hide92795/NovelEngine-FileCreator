@@ -21,7 +21,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public class NovelEngineFileCreator {
-	private static final String VERSION = "a1.5.0";
+	private static final String VERSION = "a1.6.0";
 	private Properties project;
 	private File output;
 	private Properties cryptProp;

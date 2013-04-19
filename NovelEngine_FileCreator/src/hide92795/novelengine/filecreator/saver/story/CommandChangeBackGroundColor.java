@@ -22,10 +22,10 @@ public class CommandChangeBackGroundColor extends Command {
 		}
 		next = nextArgument(tokenizer);
 		Color color = null;
-		boolean bool;
+		boolean bool_str;
 		if (next == SaverStory.DOUBLE_QUOTE) {
 			// 文字列表現
-			bool = true;
+			bool_str = true;
 			String c = tokenizer.sval;
 			if (c.startsWith("#")) {
 				// HTML表記
@@ -38,7 +38,7 @@ public class CommandChangeBackGroundColor extends Command {
 			}
 		} else if (next == StreamTokenizer.TT_NUMBER) {
 			// 3数字RGB表現
-			bool = false;
+			bool_str = false;
 			int r = (int) tokenizer.nval;
 			next = nextArgument(tokenizer);
 			if (next != StreamTokenizer.TT_NUMBER) {
@@ -61,13 +61,13 @@ public class CommandChangeBackGroundColor extends Command {
 		next = nextArgument(tokenizer);
 		if (next != StreamTokenizer.TT_NUMBER) {
 			// 非数値
-			if (bool) {
-				throw new CommandException(tokenizer.lineno(), "背景色", 3, "引数「青」は数値でなければいけません。");
+			if (bool_str) {
+				throw new CommandException(tokenizer.lineno(), "背景色", 3, "引数「アルファ値」は数値でなければいけません。");
 			} else {
-				throw new CommandException(tokenizer.lineno(), "背景色", 5, "引数「青」は数値でなければいけません。");
+				throw new CommandException(tokenizer.lineno(), "背景色", 5, "引数「アルファ値」は数値でなければいけません。");
 			}
 		} else {
-			int i = (int) tokenizer.nval;
+			byte i = (byte) tokenizer.nval;
 			commandLine.add(i);
 		}
 		next = tokenizer.nextToken();
