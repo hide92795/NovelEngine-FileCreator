@@ -1,3 +1,20 @@
+//
+// NovelEngine Project
+//
+// Copyright (C) 2013 - hide92795
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
 package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.VarNumManager;
@@ -16,27 +33,41 @@ import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 import org.yaml.snakeyaml.Yaml;
 
+/**
+ * キャラクターデータを保存するセーバーです。
+ * 
+ * @author hide92795
+ */
 public class SaverCharacter extends Saver {
-
-	private File path;
-
-	public SaverCharacter(File output, Properties crypt, File path, String encoding) {
-		super(output, crypt, encoding);
-		this.path = path;
+	/**
+	 * キャラクターデータを保存するセーバーを生成します。
+	 * 
+	 * @param outputDir
+	 *            出力先のディレクトリ
+	 * @param src
+	 *            必要なファイルが保管されているディレクトリ、もしくはファイル
+	 * @param crypt
+	 *            暗号化に関する情報を保存するプロパティ
+	 * @param encoding
+	 *            読み込み時に使用する文字コード
+	 */
+	public SaverCharacter(File outputDir, File src, Properties crypt, String encoding) {
+		super(outputDir, src, crypt, encoding);
 	}
 
 	@Override
 	public void pack() throws Exception {
 		// 位置データ
-		CipherOutputStream cos = createCipherInputStream(new File(output, "character.neo"), crypt);
+		CipherOutputStream cos = createCipherInputStream(new File(getOutputDir(), "character.neo"),
+				getCryptProperties());
 
 		MessagePack msgpack = new MessagePack();
 		Packer p = msgpack.createPacker(cos);
 
-		File position = new File(path, "position");
+		File position = new File(getSrc(), "position");
 		position = new File(position, "position.yml");
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(position), encoding));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(position), getEncoding()));
 		Yaml yaml = new Yaml();
 		Map<?, ?> map = (Map<?, ?>) yaml.load(reader);
 		Set<?> set = map.keySet();
@@ -62,9 +93,9 @@ public class SaverCharacter extends Saver {
 		for (String character_s : characters_ks) {
 			p.write(characters.get(character_s));
 
-			File character = new File(path, character_s + ".yml");
-			BufferedReader reader_c = new BufferedReader(
-					new InputStreamReader(new FileInputStream(character), encoding));
+			File character = new File(getSrc(), character_s + ".yml");
+			BufferedReader reader_c = new BufferedReader(new InputStreamReader(new FileInputStream(character),
+					getEncoding()));
 			Map<?, ?> map_c = (Map<?, ?>) yaml.load(reader_c);
 
 			p.write(map_c.get("Name"));
@@ -85,7 +116,6 @@ public class SaverCharacter extends Saver {
 			}
 			reader_c.close();
 		}
-
 		p.flush();
 		p.close();
 	}

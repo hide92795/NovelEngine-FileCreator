@@ -1,3 +1,20 @@
+//
+// NovelEngine Project
+//
+// Copyright (C) 2013 - hide92795
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
 package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.VarNumManager;
@@ -20,6 +37,11 @@ import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 import org.yaml.snakeyaml.Yaml;
 
+/**
+ * フォントデータを保存するセーバーです。
+ * 
+ * @author hide92795
+ */
 public class SaverFont extends Saver {
 	/**
 	 * 装飾なしの文字を表します。
@@ -33,16 +55,26 @@ public class SaverFont extends Saver {
 	 * 縁取り文字を表します。
 	 */
 	public static final int TEXT_EDGED = 2;
-	private File path;
 
-	public SaverFont(File output, Properties crypt, File path, String encoding) {
-		super(output, crypt, encoding);
-		this.path = path;
+	/**
+	 * フォントデータを保存するセーバーを生成します。
+	 * 
+	 * @param outputDir
+	 *            出力先のディレクトリ
+	 * @param src
+	 *            必要なファイルが保管されているディレクトリ、もしくはファイル
+	 * @param crypt
+	 *            暗号化に関する情報を保存するプロパティ
+	 * @param encoding
+	 *            読み込み時に使用する文字コード
+	 */
+	public SaverFont(File outputDir, File src, Properties crypt, String encoding) {
+		super(outputDir, src, crypt, encoding);
 	}
 
 	@Override
 	public void pack() throws Exception {
-		CipherOutputStream cos = createCipherInputStream(new File(output, "font.neo"), crypt);
+		CipherOutputStream cos = createCipherInputStream(new File(getOutputDir(), "font.neo"), getCryptProperties());
 
 		MessagePack msgpack = new MessagePack();
 		Packer p = msgpack.createPacker(cos);
@@ -50,8 +82,8 @@ public class SaverFont extends Saver {
 		Yaml yaml = new Yaml();
 
 		// フォント読み込み
-		File file = new File(path, "font.yml");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding));
+		File file = new File(getSrc(), "font.yml");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), getEncoding()));
 		Map<?, ?> map = (Map<?, ?>) yaml.load(reader);
 
 		Set<?> key = map.keySet();
@@ -122,7 +154,7 @@ public class SaverFont extends Saver {
 		Set<String> fonts = fontsMap.keySet();
 
 		for (String filename : fonts) {
-			File fontFile = new File(path, filename);
+			File fontFile = new File(getSrc(), filename);
 
 			FileInputStream fis1 = new FileInputStream(fontFile);
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -150,12 +182,20 @@ public class SaverFont extends Saver {
 		reader.close();
 	}
 
+	/**
+	 * フォントの縁の描画タイプを表すIDを文字列から判別し、返します。
+	 * 
+	 * @param decorationType_s
+	 *            描画タイプを表す文字列
+	 * @return 描画タイプを表すID
+	 */
 	private int getDecorationType(String decorationType_s) {
-		if (decorationType_s.equals("edged")) {
+		switch (decorationType_s.toLowerCase()) {
+		case "edged":
 			return TEXT_EDGED;
-		} else if (decorationType_s.equals("shadowed")) {
+		case "shadowed":
 			return TEXT_SHADOWED;
-		} else {
+		default:
 			return TEXT_NONE;
 		}
 	}

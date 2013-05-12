@@ -1,3 +1,20 @@
+//
+// NovelEngine Project
+//
+// Copyright (C) 2013 - hide92795
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
 package hide92795.novelengine.filecreator;
 
 import hide92795.novelengine.filecreator.saver.SaverBasic;
@@ -20,18 +37,45 @@ import java.io.InputStreamReader;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * Clientで実行するためのデータをパッケージングするFileCreatorシステムの中枢クラスです。
+ * 
+ * @author hide92795
+ */
 public class NovelEngineFileCreator {
-	private static final String VERSION = "a1.6.0";
-	private Properties project;
-	private File output;
-	private Properties cryptProp;
 	/**
-	 * プロジェクトのデータがあるディレクトリ
+	 * FileCreatorのバージョンを表します。
+	 */
+	private static final String VERSION = "a1.6.1";
+	/**
+	 * FileCreatorシステムがデバッグモードで動作しているかどうかを表します。
+	 */
+	public static final boolean DEBUG = true;
+	/**
+	 * プロジェクトデータを表すプロパティです。
+	 */
+	private Properties project;
+	/**
+	 * 出力先のフォルダを表します。
+	 */
+	private File output;
+	/**
+	 * 暗号化に関する情報を保存するプロパティです。
+	 */
+	private Properties cryptProperties;
+	/**
+	 * プロジェクトのデータがあるディレクトリです。
 	 */
 	private File path;
+	/**
+	 * リソースの読み込み時に使用する文字コードです。
+	 */
 	private String encoding;
 
 
+	/**
+	 * FileCreatorシステムを生成します。
+	 */
 	public NovelEngineFileCreator() {
 		System.out.println("----------------------------------------");
 		System.out.println(" NovelEngine FileCreator v" + VERSION);
@@ -39,71 +83,20 @@ public class NovelEngineFileCreator {
 		System.out.println();
 	}
 
+	/**
+	 * FileCreatorシステムを初期化します。
+	 */
 	private void init() {
 		VarNumManager.CHAPTER_ID.getMap().put("start", SaverStory.CHAPTER_START);
 		VarNumManager.CHAPTER_ID.getMap().put("menu", SaverStory.CHAPTER_MENU);
 	}
 
-	private void loadProject(String file) throws FileNotFoundException, IOException {
-		project = new Properties();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-		project.load(reader);
-		path = new File(project.getProperty("Path"));
-		encoding = project.getProperty("Encoding", "UTF-8");
-		cryptProp = new Properties();
-		BufferedReader cryptReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path,
-				"Crypt.cfg")), encoding));
-		cryptProp.load(cryptReader);
-		// System.out.println("変数用テーブルを作成します。");
-		// TimeManager.start();
-		// int num = 100000;
-		// LinkedList<Integer> random = new LinkedList<Integer>();
-		// for (int i = 0; i < num; i++) {
-		// random.add(i);
-		// }
-		// TimeManager.end("完了：(", "sec)");
-		// String randomValue = project.getProperty("VauleList");
-		// if (randomValue == null) {
-		// System.out.println("変数リストが存在しないので新しく作成します。");
-		// }else{
-		// System.out.println("既に存在する変数リストを読み込みます");
-		// }
-		System.out.println("Project Name : " + project.getProperty("Gamename"));
-		System.out.println("     Version : " + project.getProperty("Version"));
-		System.out.println();
-		reader.close();
-		cryptReader.close();
-	}
-
-	private void initFolder() throws IOException, InterruptedException {
-		delete(new File("output"));
-		Thread.sleep(500);
-		output = new File("output");
-		output.mkdir();
-		new File(output, "img").mkdir();
-		new File(output, "sound").mkdir();
-		new File(output, "object").mkdir();
-		new File(output, "story").mkdir();
-		new File(output, "voice").mkdir();
-		Thread.sleep(500);
-	}
-
-	private void createBasicData() throws Exception {
-		SaverBasic basic = new SaverBasic(project, output, cryptProp, path, encoding);
-		basic.pack();
-
-		File startFile = new File(path, "start.txt");
-		File menuFile = new File(path, "menu.txt");
-
-		System.out.println(startFile.getName());
-		SaverStory saverStorymain = new SaverStory(startFile, output, cryptProp, encoding);
-		saverStorymain.pack();
-
-		System.out.println(menuFile.getName());
-		SaverStory saverStorymenu = new SaverStory(menuFile, output, cryptProp, encoding);
-		saverStorymenu.pack();
-	}
-
+	/**
+	 * FileCreatorシステムを起動します。
+	 * 
+	 * @param args
+	 *            引数
+	 */
 	public static void main(String[] args) {
 		String name;
 		if (args.length == 0) {
@@ -195,69 +188,131 @@ public class NovelEngineFileCreator {
 		}
 	}
 
-	private void createFigireData() throws Exception {
-		File outputDir = new File(output, "object");
-		File root = new File(path, "Figure");
-		SaverFigure saver = new SaverFigure(outputDir, cryptProp, encoding, root);
-		saver.pack();
+	/**
+	 * プロジェクトファイルをロードします。
+	 * 
+	 * @param file
+	 *            プロジェクトファイルのパス
+	 * @throws IOException
+	 *             何らかの入出力エラーが発生した場合
+	 */
+	private void loadProject(String file) throws IOException {
+		project = new Properties();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+		project.load(reader);
+		path = new File(project.getProperty("Path"));
+		encoding = project.getProperty("Encoding", "UTF-8");
+		cryptProperties = new Properties();
+		BufferedReader cryptReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path,
+				"Crypt.cfg")), encoding));
+		cryptProperties.load(cryptReader);
+		System.out.println("Project Name : " + project.getProperty("Gamename"));
+		System.out.println("     Version : " + project.getProperty("Version"));
+		System.out.println();
+		reader.close();
+		cryptReader.close();
 	}
 
-	private void createVoiceData() throws Exception {
-		File outputDir = new File(output, "voice");
-		File root = new File(path, "Voice");
-		SaverVoice saver = new SaverVoice(outputDir, cryptProp, root, encoding);
-		saver.pack();
+	/**
+	 * 出力先のフォルダを作成します。
+	 * 
+	 * @throws IOException
+	 *             何らかの入出力エラーが発生した場合
+	 * @throws InterruptedException
+	 *             何らかのスレッドが現在のスレッドに割り込んだ場合。
+	 */
+	private void initFolder() throws IOException, InterruptedException {
+		delete(new File("output"));
+		Thread.sleep(500);
+		output = new File("output");
+		output.mkdir();
+		new File(output, "img").mkdir();
+		new File(output, "sound").mkdir();
+		new File(output, "object").mkdir();
+		new File(output, "story").mkdir();
+		new File(output, "voice").mkdir();
+		Thread.sleep(500);
 	}
 
-	private void createFontData() throws Exception {
-		File outputDir = new File(output, "object");
-		File root = new File(path, "Font");
-		SaverFont saver = new SaverFont(outputDir, cryptProp, root, encoding);
-		saver.pack();
+	/**
+	 * 基本データを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
+	private void createBasicData() throws Exception {
+		SaverBasic basic = new SaverBasic(output, path, cryptProperties, encoding, project);
+		basic.pack();
+
+		File startFile = new File(path, "start.txt");
+		File menuFile = new File(path, "menu.txt");
+
+		System.out.println(startFile.getName());
+		SaverStory saverStorymain = new SaverStory(output, startFile, cryptProperties, encoding);
+		saverStorymain.pack();
+
+		System.out.println(menuFile.getName());
+		SaverStory saverStorymenu = new SaverStory(output, menuFile, cryptProperties, encoding);
+		saverStorymenu.pack();
 	}
 
+	/**
+	 * メッセージボックスのデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
 	private void createBoxData() throws Exception {
 		File outputDir = new File(output, "object");
 		File root = new File(path, "Box");
-		SaverBox saver = new SaverBox(outputDir, cryptProp, root, encoding);
+		SaverBox saver = new SaverBox(outputDir, root, cryptProperties, encoding);
 		saver.pack();
 	}
 
-	private void createCharacterData() throws Exception {
+	/**
+	 * フォントデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
+	private void createFontData() throws Exception {
 		File outputDir = new File(output, "object");
-		File root = new File(path, "Character");
-		SaverCharacter saver = new SaverCharacter(outputDir, cryptProp, root, encoding);
+		File root = new File(path, "Font");
+		SaverFont saver = new SaverFont(outputDir, root, cryptProperties, encoding);
 		saver.pack();
 	}
 
-	private void createGuiData() throws Exception {
-		File outputDir = new File(output, "object");
-		SaverGui saver = new SaverGui(outputDir, cryptProp, encoding);
-		saver.pack();
-	}
-
+	/**
+	 * ボタンデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
 	private void createButtonData() throws Exception {
 		File root = new File(path, "Button");
 		File outputDir = new File(output, "object");
-		SaverButton saver = new SaverButton(outputDir, cryptProp, root, encoding);
+		SaverButton saver = new SaverButton(outputDir, root, cryptProperties, encoding);
 		saver.pack();
 	}
 
-	private void createSoundData() throws Exception {
-		Set<String> audios = VarNumManager.SOUND.getMap().keySet();
-		File root = new File(path, "Sound");
-		File outputDir = new File(output, "sound");
-		for (String audio : audios) {
-			File f = new File(root, audio + ".ogg");
-			if (!f.exists()) {
-				throw new FileNotFoundException("オーディオファイル \"" + f.getName() + "\" が見つかりません。");
-			}
-			SaverSound saverSound = new SaverSound(outputDir, cryptProp, f, VarNumManager.SOUND.getMap().get(audio),
-					encoding);
-			saverSound.pack();
-		}
+	/**
+	 * GUIデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
+	private void createGuiData() throws Exception {
+		File outputDir = new File(output, "object");
+		SaverGui saver = new SaverGui(outputDir, cryptProperties, encoding);
+		saver.pack();
 	}
 
+	/**
+	 * ストーリーデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
 	private void createStoryData() throws Exception {
 		File folder = new File(path, "Story");
 		File outputDir = new File(output, "story");
@@ -265,11 +320,43 @@ public class NovelEngineFileCreator {
 		for (File file : files) {
 			VarNumManager.SCENE_ID.reset();
 			System.out.println(file.getName());
-			SaverStory saverStory = new SaverStory(file, outputDir, cryptProp, encoding);
+			SaverStory saverStory = new SaverStory(outputDir, file, cryptProperties, encoding);
 			saverStory.pack();
 		}
 	}
 
+	/**
+	 * フィギュアデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
+	private void createFigireData() throws Exception {
+		File outputDir = new File(output, "object");
+		File root = new File(path, "Figure");
+		SaverFigure saver = new SaverFigure(outputDir, root, cryptProperties, encoding);
+		saver.pack();
+	}
+
+	/**
+	 * キャラクターデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
+	private void createCharacterData() throws Exception {
+		File outputDir = new File(output, "object");
+		File root = new File(path, "Character");
+		SaverCharacter saver = new SaverCharacter(outputDir, root, cryptProperties, encoding);
+		saver.pack();
+	}
+
+	/**
+	 * 画像データを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
 	private void createImageData() throws Exception {
 		Set<String> images = VarNumManager.IMAGE.getMap().keySet();
 		File root = new File(path, "Image");
@@ -279,14 +366,54 @@ public class NovelEngineFileCreator {
 			if (!f.exists()) {
 				throw new FileNotFoundException("イメージファイル \"" + f.getName() + "\" が見つかりません。");
 			}
-			SaverImage saverImage = new SaverImage(outputDir, cryptProp, f, VarNumManager.IMAGE.getMap().get(image),
-					encoding);
+			SaverImage saverImage = new SaverImage(outputDir, f, cryptProperties, encoding, VarNumManager.IMAGE.getMap().get(
+							image));
 			saverImage.pack();
 		}
 	}
 
-	private void delete(File f) {
-		if (f.exists() == false) {
+	/**
+	 * サウンドデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
+	private void createSoundData() throws Exception {
+		Set<String> audios = VarNumManager.SOUND.getMap().keySet();
+		File root = new File(path, "Sound");
+		File outputDir = new File(output, "sound");
+		for (String audio : audios) {
+			File f = new File(root, audio + ".ogg");
+			if (!f.exists()) {
+				throw new FileNotFoundException("オーディオファイル \"" + f.getName() + "\" が見つかりません。");
+			}
+			SaverSound saverSound = new SaverSound(outputDir, f, cryptProperties, encoding, VarNumManager.SOUND.getMap().get(
+							audio));
+			saverSound.pack();
+		}
+	}
+
+	/**
+	 * ボイスデータを作成・保存します。
+	 * 
+	 * @throws Exception
+	 *             何らかのエラーが発生した場合
+	 */
+	private void createVoiceData() throws Exception {
+		File outputDir = new File(output, "voice");
+		File root = new File(path, "Voice");
+		SaverVoice saver = new SaverVoice(outputDir, root, cryptProperties, encoding);
+		saver.pack();
+	}
+
+	/**
+	 * 指定したディレクトリをサブフォルダを含めて削除します。
+	 * 
+	 * @param f
+	 *            削除するフォルダー
+	 */
+	private static void delete(File f) {
+		if (!f.exists()) {
 			return;
 		} else if (f.isFile()) {
 			f.delete();

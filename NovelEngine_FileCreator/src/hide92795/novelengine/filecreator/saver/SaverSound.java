@@ -1,3 +1,20 @@
+//
+// NovelEngine Project
+//
+// Copyright (C) 2013 - hide92795
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
 package hide92795.novelengine.filecreator.saver;
 
 import java.io.File;
@@ -5,29 +22,40 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import javax.crypto.CipherOutputStream;
 
+/**
+ * サウンドデータを保存するセーバーです。
+ * 
+ * @author hide92795
+ */
 public class SaverSound extends Saver {
-	private final File src;
+	/**
+	 * このサウンドのIDを表します。
+	 */
 	private final int id;
 
-	public SaverSound(File output, Properties crypt, File src, int id, String encoding) {
-		super(output, crypt, encoding);
-		this.src = src;
+	/**
+	 * @param outputDir
+	 *            出力先のディレクトリ、もしくはファイル
+	 * @param src
+	 *            必要なファイルが保管されているディレクトリ
+	 * @param crypt
+	 *            暗号化に関する情報を保存するプロパティ
+	 * @param encoding
+	 *            読み込み時に使用する文字コード
+	 * @param id
+	 *            このサウンドのID
+	 */
+	public SaverSound(File outputDir, File src, Properties crypt, String encoding, int id) {
+		super(outputDir, src, crypt, encoding);
 		this.id = id;
 	}
 
 	@Override
 	public void pack() throws Exception {
-		System.out.println(src.getName());
-		FileInputStream fis = new FileInputStream(src);
+		System.out.println(getSrc().getName());
+		FileInputStream fis = new FileInputStream(getSrc());
 
-		CipherOutputStream cos = createCipherInputStream(new File(output, id + ".nea"), crypt);
-
-		// System.out.print("IV: ");
-		// byte[] prme = cipher.getIV();
-		// for (int i = 0; i < prme.length; i++) {
-		// System.out.print(Integer.toHexString(prme[i] & 0xff) + " ");
-		// }
-		// System.out.println();
+		CipherOutputStream cos = createCipherInputStream(new File(getOutputDir(), id + ".nea"), getCryptProperties());
 
 		byte[] a = new byte[8];
 		int i = fis.read(a);
@@ -41,5 +69,4 @@ public class SaverSound extends Saver {
 		cos.close();
 		fis.close();
 	}
-
 }

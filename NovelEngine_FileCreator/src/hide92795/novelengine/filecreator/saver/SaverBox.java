@@ -1,3 +1,20 @@
+//
+// NovelEngine Project
+//
+// Copyright (C) 2013 - hide92795
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
 package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.FileExtensionFilter;
@@ -13,32 +30,53 @@ import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 import org.yaml.snakeyaml.Yaml;
 
+/**
+ * メッセージボックスに関するデータを保存するセーバーです。
+ * 
+ * @author hide92795
+ */
 public class SaverBox extends Saver {
+	/**
+	 * 名前表示を左寄りにすることを表します。
+	 */
 	public static final int NAME_LEFT = 0;
+	/**
+	 * 名前表示を中央寄りにすることを表します。
+	 */
 	public static final int NAME_CENTER = 1;
-	private File path;
 
-	public SaverBox(File output, Properties crypt, File path, String encoding) {
-		super(output, crypt, encoding);
-		this.path = path;
+	/**
+	 * メッセージボックスに関するデータを保存するセーバーを生成します。
+	 * 
+	 * @param outputDir
+	 *            出力先のディレクトリ
+	 * @param src
+	 *            必要なファイルが保管されているディレクトリ、もしくはファイル
+	 * @param crypt
+	 *            暗号化に関する情報を保存するプロパティ
+	 * @param encoding
+	 *            読み込み時に使用する文字コード
+	 */
+	public SaverBox(File outputDir, File src, Properties crypt, String encoding) {
+		super(outputDir, src, crypt, encoding);
 	}
 
 	@Override
 	public void pack() throws Exception {
-		CipherOutputStream cos = createCipherInputStream(new File(output, "box.neo"), crypt);
+		CipherOutputStream cos = createCipherInputStream(new File(getOutputDir(), "box.neo"), getCryptProperties());
 
 		Yaml yaml = new Yaml();
 		MessagePack msgpack = new MessagePack();
 		Packer p = msgpack.createPacker(cos);
 
-		File[] buttons = path.listFiles(new FileExtensionFilter("yml"));
+		File[] buttons = getSrc().listFiles(new FileExtensionFilter("yml"));
 
 		int defaultId = 0;
 
 		p.write(buttons.length);
 
 		for (File box : buttons) {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(box), encoding));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(box), getEncoding()));
 			Map<?, ?> map = (Map<?, ?>) yaml.load(reader);
 
 			int id = (Integer) map.get("ID");
@@ -142,8 +180,15 @@ public class SaverBox extends Saver {
 		p.close();
 	}
 
-	private int getNameType(String nameType_s) {
-		if (nameType_s.equals("left")) {
+	/**
+	 * 文字の配置を表すIDを文字列から判別し、返します。
+	 * 
+	 * @param nameType
+	 *            文字の配置を表す文字列
+	 * @return 文字の配置を表すID
+	 */
+	private int getNameType(String nameType) {
+		if (nameType.toLowerCase().equals("left")) {
 			return NAME_LEFT;
 		} else {
 			return NAME_CENTER;

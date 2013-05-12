@@ -1,3 +1,20 @@
+//
+// NovelEngine Project
+//
+// Copyright (C) 2013 - hide92795
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
 package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.FileExtensionFilter;
@@ -13,28 +30,45 @@ import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 import org.yaml.snakeyaml.Yaml;
 
+/**
+ * ボタンデータを保存するセーバーです。
+ * 
+ * @author hide92795
+ */
 public class SaverButton extends Saver {
-	private File path;
 
-	public SaverButton(File output, Properties crypt, File path, String encoding) {
-		super(output, crypt, encoding);
-		this.path = path;
+	/**
+	 * ボタンデータを保存するセーバーを生成します。
+	 * 
+	 * @param outputDir
+	 *            出力先のディレクトリ
+	 * @param src
+	 *            必要なファイルが保管されているディレクトリ、もしくはファイル
+	 * @param crypt
+	 *            暗号化に関する情報を保存するプロパティ
+	 * @param encoding
+	 *            読み込み時に使用する文字コード
+	 */
+	public SaverButton(File outputDir, File src, Properties crypt, String encoding) {
+		super(outputDir, src, crypt, encoding);
 	}
 
+	@Override
 	public void pack() throws Exception {
-		CipherOutputStream cos = createCipherInputStream(new File(output, "button.neo"), crypt);
+		CipherOutputStream cos = createCipherInputStream(new File(getOutputDir(), "button.neo"), getCryptProperties());
 
 		MessagePack msgpack = new MessagePack();
 		Packer p = msgpack.createPacker(cos);
 
 		// ボタンデータ
 
-		File[] buttons = path.listFiles(new FileExtensionFilter("txt"));
+		File[] buttons = getSrc().listFiles(new FileExtensionFilter("txt"));
 
 		p.write(buttons.length);
 
 		for (File button : buttons) {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(button), encoding));
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(new FileInputStream(button), getEncoding()));
 			Properties prop = new Properties();
 			prop.load(reader);
 			String imageNormal = prop.getProperty("ImageNormal");
@@ -42,7 +76,7 @@ public class SaverButton extends Saver {
 			String imageDisabled = prop.getProperty("ImageDisabled");
 			String imageClicked = prop.getProperty("ImageClicked");
 			String clickable_s = prop.getProperty("Clickable");
-			File clickable = new File(path, clickable_s);
+			File clickable = new File(getSrc(), clickable_s);
 			String textXPos_s = prop.getProperty("TextXPosition");
 			String textYPos_s = prop.getProperty("TextYPosition");
 			String width_s = prop.getProperty("Width");
@@ -74,7 +108,7 @@ public class SaverButton extends Saver {
 
 		// 位置データ
 
-		File position_path = new File(path, "position");
+		File position_path = new File(getSrc(), "position");
 
 		File[] positions = position_path.listFiles(new FileExtensionFilter("yml"));
 

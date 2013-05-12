@@ -1,3 +1,20 @@
+//
+// NovelEngine Project
+//
+// Copyright (C) 2013 - hide92795
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
 package hide92795.novelengine.filecreator.saver;
 
 import hide92795.novelengine.filecreator.VarNumManager;
@@ -13,15 +30,30 @@ import javax.imageio.ImageIO;
 import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 
+/**
+ * GUIデータを保存するセーバーです。
+ * 
+ * @author hide92795
+ */
 public class SaverGui extends Saver {
 
-	public SaverGui(File output, Properties crypt, String encoding) {
-		super(output, crypt, encoding);
+	/**
+	 * GUIデータを保存するセーバーを生成します。
+	 * 
+	 * @param outputDir
+	 *            出力先のディレクトリ
+	 * @param crypt
+	 *            暗号化に関する情報を保存するプロパティ
+	 * @param encoding
+	 *            読み込み時に使用する文字コード
+	 */
+	public SaverGui(File outputDir, Properties crypt, String encoding) {
+		super(outputDir, null, crypt, encoding);
 	}
 
 	@Override
 	public void pack() throws Exception {
-		CipherOutputStream cos = createCipherInputStream(new File(output, "gui.neo"), crypt);
+		CipherOutputStream cos = createCipherInputStream(new File(getOutputDir(), "gui.neo"), getCryptProperties());
 
 		MessagePack msgpack = new MessagePack();
 		Packer p = msgpack.createPacker(cos);
